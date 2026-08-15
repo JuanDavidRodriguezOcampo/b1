@@ -1,0 +1,3439 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Imagen 3D</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f5f6f8;color:#17181a;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{background:#111;color:#fff;padding:20px 22px;font-size:22px;font-weight:900}
+main{max-width:900px;margin:auto;padding:18px}
+.hero{background:#fff;border-radius:20px;padding:22px;box-shadow:0 4px 20px #0000000d}
+button{font:inherit;font-weight:800;border:0;border-radius:12px;cursor:pointer}
+.primary{width:100%;padding:19px;background:#111;color:#fff;font-size:18px}
+.back{background:#e9eaed;padding:12px 15px;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:16px}
+.history-card{transition:transform .15s ease,box-shadow .15s ease;cursor:pointer}.history-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.10)}.history-card:active{transform:translateY(0)}
+.card{background:#fff;border-radius:15px;padding:17px;border:1px solid #e6e7e9}
+.small{font-size:13px;color:#70757d}
+label{display:block;font-weight:800;margin:16px 0 7px}
+input,textarea{width:100%;padding:13px;border:1px solid #d6d9de;border-radius:11px;font:inherit}
+textarea{min-height:140px;resize:vertical}
+.hidden{display:none!important}
+.modal-overlay.hidden{display:none!important}
+.modal-overlay{position:fixed;inset:0;background:#0008;display:flex;align-items:center;justify-content:center;padding:18px;z-index:50}
+.modal{width:min(480px,100%);background:#fff;border-radius:22px;padding:23px;box-shadow:0 20px 60px #0006}
+.user-row{display:flex;gap:8px;margin-top:10px;align-items:center}
+.user-name{flex:1;background:#f3f4f6;padding:14px;text-align:left}
+.edit-btn{background:#e9eaed;padding:12px}
+.add-user{width:100%;background:#111;color:#fff;padding:14px;margin-top:14px}
+.cancel-btn{width:100%;background:#e9eaed;padding:14px;margin-top:9px}
+.color-dot{display:inline-block;width:15px;height:15px;border-radius:50%;vertical-align:-2px;margin-right:7px}
+.color-grid{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.color-choice{width:32px;height:32px;border-radius:50%;padding:0;border:3px solid transparent}
+.color-choice.selected{border-color:#111}
+.client-name{font-size:24px;font-weight:900;line-height:1.15;margin-bottom:5px;padding-right:145px}.client{position:relative;margin-top:12px;background:#fff;border:1px solid #e0e2e5;border-radius:15px;padding:16px;padding-top:16px}
+.creator-tag{position:absolute;top:42px;right:12px;color:#fff;border-radius:999px;padding:6px 10px;font-size:12px;font-weight:900}
+.client-actions{position:static;margin-top:12px;display:flex;justify-content:flex-start}
+.creator-with-action{right:115px}
+.edit-job-btn{background:#eceff3;color:#222;border:1px solid #d7dbe0;padding:9px 11px;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer}.edit-job-btn:hover{background:#e2e5e9}
+.card-wa-btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;background:#25d366;color:#fff;border-radius:10px;padding:9px 11px;font-size:13px;font-weight:800;cursor:pointer}.card-wa-btn:hover{filter:brightness(.94)}
+.delete-job-btn{background:#d94b4b;color:#fff;border:0;padding:9px 11px;border-radius:10px;font-size:15px;cursor:pointer}.delete-job-btn:hover{filter:brightness(.92)}
+.delivered-btn{background:#2e9d55;color:#fff;padding:9px 12px;font-size:13px}
+.delivered-badge{background:#2e9d55;color:#fff;padding:7px 10px;border-radius:999px;font-size:12px}
+.progress-bg{height:12px;background:#e7e9ec;border-radius:99px;overflow:hidden;margin-top:7px}
+.progress{height:100%;width:0;border-radius:99px}
+.deposit-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.deposit-row #deposit{flex:1;min-width:150px}
+.delivery-payment-options{position:relative;z-index:2}.payment-methods{display:flex;gap:5px;flex-wrap:wrap}.payment-btn{border:0;border-radius:9px;padding:7px 9px;font-size:11px;font-weight:900;color:#fff;cursor:pointer;opacity:.62;white-space:nowrap}.payment-btn.selected{opacity:1;box-shadow:0 0 0 2px #1113}.payment-btn.cash{background:#2e9d55}.payment-btn.nequi{background:#7b3fb3}.payment-btn.bancolombia{background:#e0b400;color:#111}.payment-btn.legacy-payment{background:#8d8d8d;color:#fff}
+.moneybox{background:#f5f6f8;border-radius:13px;padding:14px;margin-top:12px}
+@media(max-width:600px){.grid{grid-template-columns:1fr}main{padding:12px}}
+</style>
+
+<style id="professional-dark-theme">
+:root{
+ --bg:#070707;
+ --surface:#101010;
+ --surface-2:#151515;
+ --surface-3:#1b1b1b;
+ --border:#292929;
+ --border-soft:#202020;
+ --text:#f4f4f4;
+ --muted:#929292;
+ --accent:#ffffff;
+ --shadow:0 18px 50px rgba(0,0,0,.38);
+}
+html,body{background:var(--bg)!important;color:var(--text)!important}
+body{
+ font-family:Inter,-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif!important;
+ letter-spacing:-.01em;
+}
+main,.container,.page{background:transparent!important}
+.card{
+ background:linear-gradient(145deg,var(--surface-2),var(--surface))!important;
+ border:1px solid var(--border)!important;
+ color:var(--text)!important;
+ box-shadow:0 10px 28px rgba(0,0,0,.22);
+ border-radius:18px!important;
+}
+.card:hover{border-color:#383838!important}
+h1,h2,h3,h4,b,strong,label{color:var(--text)!important}
+.small,p,.muted{color:var(--muted)!important}
+input,textarea,select{
+ background:#0d0d0d!important;
+ color:var(--text)!important;
+ border:1px solid #303030!important;
+ border-radius:12px!important;
+ outline:none;
+}
+input:focus,textarea:focus,select:focus{
+ border-color:#666!important;
+ box-shadow:0 0 0 3px rgba(255,255,255,.06)!important;
+}
+button{font-family:inherit!important}
+.primary,.add-user{
+ background:#f5f5f5!important;
+ color:#080808!important;
+ border:1px solid #fff!important;
+ border-radius:12px!important;
+ font-weight:850!important;
+ box-shadow:0 8px 20px rgba(0,0,0,.22);
+}
+.primary:hover,.add-user:hover{background:#fff!important;transform:translateY(-1px)}
+.cancel-btn,.back{
+ background:#181818!important;
+ color:#ddd!important;
+ border:1px solid #303030!important;
+ border-radius:12px!important;
+}
+.cancel-btn:hover,.back:hover{background:#222!important}
+.modal-overlay{
+ background:rgba(0,0,0,.82)!important;
+ backdrop-filter:blur(12px);
+ -webkit-backdrop-filter:blur(12px);
+}
+.modal{
+ background:#111!important;
+ color:var(--text)!important;
+ border:1px solid #303030!important;
+ border-radius:22px!important;
+ box-shadow:0 30px 90px rgba(0,0,0,.7)!important;
+}
+.hero,.section{background:transparent!important}
+.history-card{
+ background:linear-gradient(145deg,#151515,#0e0e0e)!important;
+ border-color:#303030!important;
+}
+.client{
+ background:linear-gradient(145deg,#171717,#101010)!important;
+ border:1px solid #2b2b2b!important;
+ color:var(--text)!important;
+ border-radius:18px!important;
+ box-shadow:0 12px 32px rgba(0,0,0,.28);
+}
+.client:hover{border-color:#414141!important}
+.client-name{color:#fff!important}
+.creator-tag{box-shadow:0 4px 12px rgba(0,0,0,.25)}
+.search-wrap{
+ background:#101010!important;
+ border:1px solid #292929!important;
+ border-radius:16px!important;
+}
+.search-btn,.search-close-btn{
+ background:#1b1b1b!important;
+ color:#fff!important;
+ border:1px solid #333!important;
+}
+.payment-btn{box-shadow:none!important;border:1px solid rgba(255,255,255,.12)!important}
+.payment-btn.selected{box-shadow:0 0 0 2px #fff!important}
+.delete-job-btn{box-shadow:none!important}
+.card-wa-btn{box-shadow:none!important}
+.delivered-btn{box-shadow:none!important}
+table{color:var(--text)!important}
+th,td{border-color:#292929!important}
+.finance-today{border-color:#333!important}
+#todayCash{color:#fff!important}
+#discountResults{background:#101010!important}
+.hidden{display:none!important}
+@media(max-width:700px){
+ .card{border-radius:16px!important}
+ .client{padding:15px!important}
+ .client-actions{width:100%;flex-wrap:wrap}
+ .client-actions button,.client-actions a{flex:1 1 auto}
+ .modal{width:calc(100% - 28px)!important}
+}
+</style>
+
+<style id="section-personality-theme">
+/* Section tiles: editorial / premium dashboard treatment */
+.dashboard-sections{
+ display:grid!important;
+ grid-template-columns:repeat(4,minmax(0,1fr));
+ gap:14px!important;
+}
+.dashboard-sections .card{
+ position:relative;
+ min-height:142px;
+ overflow:hidden;
+ display:flex!important;
+ flex-direction:column;
+ justify-content:flex-end;
+ padding:22px!important;
+ text-align:left!important;
+ border-radius:22px!important;
+ background:#111!important;
+ border:1px solid #292929!important;
+ transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease!important;
+}
+.dashboard-sections .card::before{
+ content:"";
+ position:absolute;
+ inset:0;
+ background:radial-gradient(circle at 85% 15%,rgba(255,255,255,.10),transparent 42%);
+ pointer-events:none;
+}
+.dashboard-sections .card::after{
+ content:"";
+ position:absolute;
+ left:0;right:0;top:0;height:3px;
+ background:linear-gradient(90deg,#fff,transparent);
+ opacity:.8;
+}
+.dashboard-sections .card:hover{
+ transform:translateY(-4px)!important;
+ border-color:#484848!important;
+ box-shadow:0 18px 42px rgba(0,0,0,.38)!important;
+}
+.dashboard-sections .section-icon{
+ position:absolute;
+ top:18px;
+ right:19px;
+ width:42px;height:42px;
+ display:grid;
+ place-items:center;
+ border-radius:13px;
+ background:#1d1d1d;
+ border:1px solid #333;
+ font-size:20px;
+}
+.dashboard-sections .section-kicker{
+ position:relative;
+ z-index:1;
+ margin-bottom:5px;
+ font-size:10px;
+ font-weight:800;
+ letter-spacing:.18em;
+ text-transform:uppercase;
+ color:#777!important;
+}
+.dashboard-sections .section-title{
+ position:relative;
+ z-index:1;
+ margin:0;
+ font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+ font-size:24px!important;
+ line-height:1.02!important;
+ letter-spacing:-.045em!important;
+ font-weight:900!important;
+ color:#f5f5f5!important;
+}
+.dashboard-sections .section-subtitle{
+ position:relative;
+ z-index:1;
+ margin-top:7px;
+ font-size:12px;
+ color:#858585!important;
+ font-weight:500;
+}
+.dashboard-sections #historyBtn::after{background:linear-gradient(90deg,#a9a9a9,transparent)}
+.dashboard-sections #financeBtn::after{background:linear-gradient(90deg,#7b61ff,transparent)}
+.dashboard-sections #newClientBtn::after{background:linear-gradient(90deg,#fff,transparent)}
+.dashboard-sections .section-new::after{background:linear-gradient(90deg,#4ade80,transparent)}
+
+@media(max-width:850px){
+ .dashboard-sections{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:520px){
+ .dashboard-sections{grid-template-columns:1fr 1fr!important;gap:10px!important}
+ .dashboard-sections .card{min-height:132px;padding:17px!important;border-radius:18px!important}
+ .dashboard-sections .section-title{font-size:20px!important}
+ .dashboard-sections .section-icon{width:36px;height:36px;right:13px;top:13px;font-size:17px}
+}
+</style>
+
+<style id="dashboard-premium-theme">
+.dashboard-home{
+ max-width:1180px!important;
+ margin:0 auto!important;
+ padding:34px 24px 60px!important;
+}
+.dashboard-topbar{
+ display:flex;justify-content:space-between;align-items:flex-start;gap:24px;
+ margin-bottom:30px;
+}
+.brand-eyebrow{
+ font-size:10px;font-weight:900;letter-spacing:.22em;color:#6f6f6f;
+ margin-bottom:12px;
+}
+.dashboard-title{
+ margin:0!important;
+ font-size:clamp(38px,5vw,64px)!important;
+ line-height:.95!important;
+ letter-spacing:-.065em!important;
+ font-weight:950!important;
+}
+.dashboard-subtitle{
+ margin:12px 0 0!important;
+ font-size:15px!important;color:#777!important;
+}
+.dashboard-status{
+ margin-top:4px;
+ padding:9px 13px;
+ border:1px solid #292929;
+ border-radius:999px;
+ background:#101010;
+ color:#929292;
+ font-size:11px;font-weight:800;
+ white-space:nowrap;
+}
+.dashboard-status span{
+ display:inline-block;width:7px;height:7px;border-radius:50%;
+ background:#4ade80;margin-right:7px;
+ box-shadow:0 0 12px #4ade80;
+}
+.dashboard-command{
+ min-height:190px;
+ border-radius:26px;
+ border:1px solid #2b2b2b;
+ background:
+ radial-gradient(circle at 80% 20%,rgba(255,255,255,.09),transparent 32%),
+ linear-gradient(125deg,#181818,#0c0c0c 65%);
+ padding:28px;
+ display:flex;align-items:center;justify-content:space-between;gap:30px;
+ box-shadow:0 25px 70px rgba(0,0,0,.35);
+ position:relative;overflow:hidden;
+}
+.dashboard-command:before{
+ content:"";
+ position:absolute;left:0;top:0;bottom:0;width:3px;
+ background:#fff;
+}
+.command-kicker,.tile-meta{
+ color:#6e6e6e!important;font-size:10px;font-weight:900;letter-spacing:.18em;
+}
+.command-title{
+ font-size:32px;font-weight:900;letter-spacing:-.04em;margin-top:7px;
+}
+.command-text{color:#777;max-width:500px;font-size:13px;margin-top:7px}
+.new-client-hero{
+ position:relative;width:190px;min-height:128px;flex:none;
+ background:#f4f4f4!important;color:#0a0a0a!important;
+ border:0;border-radius:20px;padding:18px 20px;text-align:left;
+ cursor:pointer;box-shadow:0 16px 40px rgba(0,0,0,.35);
+ transition:.18s ease;
+}
+.new-client-hero:hover{transform:translateY(-3px);box-shadow:0 24px 48px rgba(0,0,0,.45)}
+.new-client-hero span{font-size:25px;display:block}
+.new-client-hero strong{font-size:18px;display:block;margin-top:20px;letter-spacing:-.03em}
+.new-client-hero small{font-size:11px;color:#666}
+.new-client-hero b{position:absolute;right:18px;top:18px;font-size:18px}
+.dashboard-section-label{
+ display:flex;align-items:center;gap:14px;margin:34px 0 14px;
+ color:#8b8b8b;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;
+}
+.dashboard-section-label i{height:1px;background:#222;flex:1}
+.dashboard-grid{
+ display:grid;grid-template-columns:1.35fr 1fr 1fr 1.35fr;gap:12px;
+}
+.dashboard-tile{
+ min-height:235px!important;
+ padding:22px!important;
+ border-radius:22px!important;
+ border:1px solid #292929!important;
+ background:#111!important;
+ color:#fff!important;
+ text-align:left!important;
+ position:relative;overflow:hidden;
+ display:flex!important;flex-direction:column;justify-content:flex-end;
+ cursor:pointer;
+ transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+.dashboard-tile:hover{
+ transform:translateY(-4px);
+ border-color:#424242!important;
+ box-shadow:0 20px 50px rgba(0,0,0,.38);
+}
+.dashboard-tile:before{
+ content:"";position:absolute;inset:0;pointer-events:none;
+ background:radial-gradient(circle at 85% 10%,rgba(255,255,255,.08),transparent 38%);
+}
+.dashboard-tile:after{
+ content:"";position:absolute;left:0;top:0;width:100%;height:2px;background:#333;
+}
+.tile-clients:after{background:#fff}.tile-history:after{background:#7c7cff}.tile-inventory:after{background:#e4e4e4}.tile-finance:after{background:#48e08a}
+.tile-icon{
+ position:absolute;right:20px;top:19px;width:42px;height:42px;border-radius:13px;
+ display:grid;place-items:center;background:#1a1a1a;border:1px solid #303030;
+ color:#ddd;font-size:20px;font-weight:800;
+}
+.tile-meta{position:relative;margin-bottom:8px}
+.tile-title{
+ position:relative;font-size:29px;font-weight:950;letter-spacing:-.055em;line-height:1;
+}
+.tile-desc{position:relative;color:#777;font-size:12px;line-height:1.45;margin-top:9px;max-width:230px}
+.tile-bottom{
+ position:relative;display:flex;justify-content:space-between;align-items:center;
+ margin-top:22px;color:#666;font-size:11px;font-weight:700;
+}
+.tile-bottom>b{font-size:18px;color:#aaa}
+.tile-action{
+ background:#1b1b1b!important;border:1px solid #303030!important;color:#ddd!important;
+ padding:7px 10px;border-radius:9px;font-size:10px;font-weight:800;cursor:pointer;
+}
+.tile-action:hover{background:#252525!important}
+.dashboard-tile button{margin:0!important}
+@media(max-width:900px){
+ .dashboard-grid{grid-template-columns:1fr 1fr}
+ .tile-clients,.tile-finance{min-height:220px!important}
+}
+@media(max-width:620px){
+ .dashboard-home{padding:24px 14px 45px!important}
+ .dashboard-topbar{margin-bottom:22px}
+ .dashboard-title{font-size:42px!important}
+ .dashboard-status{display:none}
+ .dashboard-command{padding:22px;min-height:210px;display:block}
+ .command-title{font-size:28px}
+ .new-client-hero{width:100%;min-height:74px;margin-top:22px}
+ .new-client-hero strong{display:inline;margin-left:8px;font-size:16px}
+ .new-client-hero small{display:inline;margin-left:8px}
+ .new-client-hero span{display:inline}
+ .new-client-hero b{top:25px}
+ .dashboard-grid{grid-template-columns:1fr 1fr;gap:9px}
+ .dashboard-tile{min-height:190px!important;padding:16px!important;border-radius:17px!important}
+ .tile-title{font-size:22px}
+ .tile-desc{font-size:11px}
+ .tile-icon{width:34px;height:34px;right:13px;top:13px;font-size:16px}
+ .tile-bottom{margin-top:15px}
+ .tile-action{font-size:9px}
+}
+</style>
+
+<style id="v40-fixes">
+/* Resta por cobrar: dark surface + readable text */
+#balanceBox,.balance-box,.resta-box,.resta-por-cobrar{
+  background:#202020!important;
+  color:#f5f5f5!important;
+  border:1px solid #353535!important;
+}
+#balanceBox *, .balance-box *, .resta-box *, .resta-por-cobrar *{
+  color:#f5f5f5!important;
+}
+#balanceBox input,.balance-box input,.resta-box input,.resta-por-cobrar input{
+  background:#171717!important;color:#fff!important;border-color:#383838!important;
+}
+
+/* Finance calendar: light gray, never pure white */
+.calendar-day,.calendar-cell,.finance-calendar .day,.calendar-grid .day{
+  background:#d9d9d9!important;
+  color:#171717!important;
+}
+.calendar-day *,.calendar-cell *,.finance-calendar .day *,.calendar-grid .day *{
+  color:#171717!important;
+}
+
+/* Slightly clearer surfaces — intentionally subtle */
+.card{background:#151515!important}
+.client{background:#191919!important}
+.dashboard-tile{background:#151515!important}
+.dashboard-command{background:
+ radial-gradient(circle at 80% 20%,rgba(255,255,255,.10),transparent 32%),
+ linear-gradient(125deg,#1b1b1b,#111 65%)!important}
+.search-wrap{background:#151515!important}
+.modal{background:#151515!important}
+
+/* Keep the main dashboard hierarchy: only a small lift from the background */
+.dashboard-tile:hover{background:#181818!important}
+</style>
+
+<style id="v41-exact-fixes">
+/* Exact fix: Resta por cobrar */
+.moneybox{background:#202020!important;color:#f5f5f5!important}
+.moneybox *{color:#f5f5f5!important}
+
+/* Exact finance calendar: soft gray cells */
+#finance .calendar-day,
+#finance .calendar-cell,
+#finance [class*="calendar"] .day{
+ background:#d6d6d6!important;
+ color:#151515!important;
+ border-color:#bdbdbd!important;
+}
+#finance .calendar-day *,
+#finance .calendar-cell *,
+#finance [class*="calendar"] .day *{
+ color:#151515!important;
+}
+
+/* Countdown bar: visual endpoint at 18:00 */
+.countdown-bar{overflow:hidden!important}
+</style>
+
+<style id="v43-visual">
+.dashboard-tile{background:#1b1b1b!important;border-color:#343434!important}
+.dashboard-command{background:
+ radial-gradient(circle at 80% 20%,rgba(255,255,255,.11),transparent 32%),
+ linear-gradient(125deg,#222,#171717 65%)!important}
+.card{background:#1b1b1b!important;border-color:#343434!important}
+.client{background:#202020!important;border-color:#383838!important}
+.client:hover{background:#242424!important;border-color:#494949!important}
+.search-wrap{background:#1b1b1b!important;border-color:#343434!important}
+</style>
+
+<style id="v44-card-buttons">
+/* Match client-card actions to the dashboard Clientes > Buscar button */
+.client-actions .card-wa-btn,
+.client-actions .edit-job-btn,
+.client-actions .delivered-btn,
+.client-actions .delete-job-btn{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:5px;
+  background:#1b1b1b!important;
+  color:#ddd!important;
+  border:1px solid #303030!important;
+  border-radius:9px!important;
+  padding:7px 10px!important;
+  min-height:32px;
+  font-size:10px!important;
+  line-height:1!important;
+  font-weight:800!important;
+  text-decoration:none!important;
+  box-shadow:none!important;
+  cursor:pointer!important;
+  transition:background .15s ease,border-color .15s ease,color .15s ease,transform .15s ease!important;
+}
+.client-actions .card-wa-btn:hover,
+.client-actions .edit-job-btn:hover,
+.client-actions .delivered-btn:hover,
+.client-actions .delete-job-btn:hover{
+  background:#252525!important;
+  border-color:#444!important;
+  color:#fff!important;
+  transform:translateY(-1px);
+}
+/* Keep semantic states, but use the same button language */
+.client-actions .delivered-btn{
+  color:#ddd!important;
+}
+.client-actions .delete-job-btn{
+  color:#ddd!important;
+}
+</style>
+
+<style id="v45-card-actions-alignment">
+/* Clean, aligned action row for client cards */
+.client-actions{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:8px!important;
+  width:100%!important;
+  align-items:stretch!important;
+  margin-top:14px!important;
+}
+.client-actions .card-wa-btn,
+.client-actions .edit-job-btn,
+.client-actions .delivered-btn,
+.client-actions .delete-job-btn{
+  width:100%!important;
+  min-width:0!important;
+  height:34px!important;
+  min-height:34px!important;
+  max-height:34px!important;
+  padding:0 8px!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border-radius:9px!important;
+  font-size:10px!important;
+  font-weight:800!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+@media(max-width:520px){
+ .client-actions{
+   grid-template-columns:repeat(2,minmax(0,1fr))!important;
+   gap:7px!important;
+ }
+ .client-actions .card-wa-btn,
+ .client-actions .edit-job-btn,
+ .client-actions .delivered-btn,
+ .client-actions .delete-job-btn{
+   height:36px!important;
+   min-height:36px!important;
+   font-size:10px!important;
+ }
+}
+</style>
+
+<style id="v46-minimal-actions">
+/* Minimal icon-only actions */
+.client-actions{
+ display:flex!important;
+ align-items:center!important;
+ justify-content:flex-end!important;
+ gap:6px!important;
+ width:auto!important;
+ margin-top:12px!important;
+}
+.client-actions .card-wa-btn,
+.client-actions .edit-job-btn,
+.client-actions .delivered-btn,
+.client-actions .delete-job-btn{
+ flex:0 0 32px!important;
+ width:32px!important;
+ height:32px!important;
+ min-width:32px!important;
+ min-height:32px!important;
+ max-width:32px!important;
+ max-height:32px!important;
+ padding:0!important;
+ margin:0!important;
+ border-radius:9px!important;
+ display:inline-flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ font-size:14px!important;
+ line-height:1!important;
+ color:#aaa!important;
+ background:#191919!important;
+ border:1px solid #2d2d2d!important;
+ text-decoration:none!important;
+ box-shadow:none!important;
+}
+.client-actions .card-wa-btn{
+ font-size:0!important;
+}
+.client-actions .card-wa-btn::before{
+ content:"◉";
+ font-size:13px;
+}
+.client-actions .edit-job-btn{
+ font-size:0!important;
+}
+.client-actions .edit-job-btn::before{
+ content:"✎";
+ font-size:15px;
+}
+.client-actions .delivered-btn{
+ font-size:0!important;
+}
+.client-actions .delivered-btn::before{
+ content:"✓";
+ font-size:14px;
+}
+.client-actions .delete-job-btn{
+ font-size:0!important;
+}
+.client-actions .delete-job-btn::before{
+ content:"⌫";
+ font-size:14px;
+}
+.client-actions .card-wa-btn:hover,
+.client-actions .edit-job-btn:hover,
+.client-actions .delivered-btn:hover,
+.client-actions .delete-job-btn:hover{
+ background:#242424!important;
+ border-color:#444!important;
+ color:#fff!important;
+ transform:translateY(-1px);
+}
+@media(max-width:520px){
+ .client-actions{
+  justify-content:flex-end!important;
+  gap:5px!important;
+ }
+ .client-actions .card-wa-btn,
+ .client-actions .edit-job-btn,
+ .client-actions .delivered-btn,
+ .client-actions .delete-job-btn{
+  width:30px!important;height:30px!important;
+  min-width:30px!important;min-height:30px!important;
+  max-width:30px!important;max-height:30px!important;
+ }
+}
+</style>
+
+<style id="v47-creator-tag">
+/* Keep creator badge clear of the action icons */
+.client{
+ position:relative!important;
+ padding-top:42px!important;
+}
+.creator-tag{
+ position:absolute!important;
+ top:12px!important;
+ left:14px!important;
+ right:auto!important;
+ z-index:1!important;
+ max-width:calc(100% - 90px)!important;
+ white-space:nowrap!important;
+ overflow:hidden!important;
+ text-overflow:ellipsis!important;
+}
+.client-actions{
+ position:relative!important;
+ z-index:2!important;
+ margin-top:14px!important;
+}
+@media(max-width:520px){
+ .client{padding-top:40px!important}
+ .creator-tag{
+  top:10px!important;
+  left:12px!important;
+  max-width:calc(100% - 82px)!important;
+ }
+}
+</style>
+
+<style id="v48-creator-badge-inline">
+/* Creator badge lives inside the existing card, below the action icons.
+   It does not reserve extra height or enlarge the card. */
+.client{
+ padding-top:15px!important;
+}
+.client-actions{
+ position:relative!important;
+ z-index:2!important;
+ margin-top:12px!important;
+ margin-bottom:8px!important;
+}
+.creator-tag{
+ position:static!important;
+ display:inline-flex!important;
+ align-items:center!important;
+ width:max-content!important;
+ max-width:100%!important;
+ box-sizing:border-box!important;
+ margin:0!important;
+ padding:4px 8px!important;
+ border-radius:999px!important;
+ font-size:9px!important;
+ line-height:1.2!important;
+ white-space:nowrap!important;
+ overflow:hidden!important;
+ text-overflow:ellipsis!important;
+ vertical-align:middle!important;
+}
+@media(max-width:520px){
+ .creator-tag{
+   max-width:100%!important;
+   font-size:8px!important;
+ }
+}
+</style>
+
+<style id="v49-final-card-actions">
+/* Creator badge: only the inline badge below actions, never a floating/top badge */
+.client > .creator-tag{
+  position:static!important;
+  top:auto!important;
+  left:auto!important;
+  right:auto!important;
+  margin-top:7px!important;
+  margin-bottom:0!important;
+  z-index:auto!important;
+}
+
+/* Perfectly centered icon actions */
+.client-actions{
+  display:flex!important;
+  justify-content:center!important;
+  align-items:center!important;
+  width:100%!important;
+  gap:7px!important;
+  margin-top:12px!important;
+  margin-bottom:0!important;
+}
+.client-actions .card-wa-btn,
+.client-actions .edit-job-btn,
+.client-actions .delivered-btn,
+.client-actions .delete-job-btn{
+  flex:0 0 32px!important;
+  width:32px!important;
+  height:32px!important;
+  min-width:32px!important;
+  min-height:32px!important;
+  max-width:32px!important;
+  max-height:32px!important;
+  padding:0!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  line-height:1!important;
+}
+
+/* Very subtle semantic colors */
+.client-actions .card-wa-btn{
+  background:#13251b!important;
+  border-color:#244733!important;
+  color:#69c88a!important;
+}
+.client-actions .edit-job-btn{
+  background:#242116!important;
+  border-color:#45402a!important;
+  color:#cdbd68!important;
+}
+.client-actions .delivered-btn{
+  background:#14241b!important;
+  border-color:#294c36!important;
+  color:#69c88a!important;
+}
+.client-actions .delete-job-btn{
+  background:#291717!important;
+  border-color:#4a2929!important;
+  color:#d87575!important;
+}
+.client-actions .card-wa-btn:hover{
+  background:#193522!important;border-color:#356847!important;color:#8be0a6!important;
+}
+.client-actions .edit-job-btn:hover{
+  background:#302d1c!important;border-color:#625a32!important;color:#e0d48a!important;
+}
+.client-actions .delivered-btn:hover{
+  background:#193522!important;border-color:#356847!important;color:#8be0a6!important;
+}
+.client-actions .delete-job-btn:hover{
+  background:#381c1c!important;border-color:#613333!important;color:#ed9292!important;
+}
+</style>
+
+<style id="v50-card-layout">
+/* Final client card layout: no duplicated top badge; actions have breathing room */
+.client{
+ position:relative!important;
+}
+.client-actions{
+ position:relative!important;
+ display:flex!important;
+ justify-content:center!important;
+ align-items:center!important;
+ gap:7px!important;
+ width:calc(100% - 16px)!important;
+ margin:14px 8px 0!important;
+ padding:0!important;
+ box-sizing:border-box!important;
+ z-index:2!important;
+}
+.client-actions .card-wa-btn,
+.client-actions .edit-job-btn,
+.client-actions .delivered-btn,
+.client-actions .delete-job-btn{
+ flex:0 0 32px!important;
+ width:32px!important;
+ height:32px!important;
+ min-width:32px!important;
+ min-height:32px!important;
+ max-width:32px!important;
+ max-height:32px!important;
+ margin:0!important;
+ padding:0!important;
+ display:inline-flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ text-align:center!important;
+ line-height:1!important;
+ box-sizing:border-box!important;
+}
+.client > .creator-tag.creator-badge{
+ position:static!important;
+ display:inline-flex!important;
+ margin:7px 8px 0!important;
+ max-width:calc(100% - 16px)!important;
+ vertical-align:middle!important;
+}
+@media(max-width:520px){
+ .client-actions{
+  width:calc(100% - 12px)!important;
+  margin-left:6px!important;
+  margin-right:6px!important;
+  gap:6px!important;
+ }
+ .client-actions .card-wa-btn,
+ .client-actions .edit-job-btn,
+ .client-actions .delivered-btn,
+ .client-actions .delete-job-btn{
+  width:30px!important;height:30px!important;
+  min-width:30px!important;min-height:30px!important;
+  max-width:30px!important;max-height:30px!important;
+ }
+}
+</style>
+
+<style id="v51-top-right-actions">
+/* Compact top-right cluster: creator badge + icons */
+.client{
+ position:relative!important;
+ padding-top:15px!important;
+}
+.client-top-right{
+ position:absolute!important;
+ top:12px!important;
+ right:12px!important;
+ display:flex!important;
+ flex-direction:column!important;
+ align-items:flex-end!important;
+ gap:6px!important;
+ z-index:5!important;
+ max-width:calc(100% - 24px)!important;
+}
+.client-top-right .creator-badge{
+ position:static!important;
+ margin:0!important;
+ max-width:180px!important;
+ overflow:hidden!important;
+ text-overflow:ellipsis!important;
+ white-space:nowrap!important;
+}
+.client-top-right .client-actions{
+ position:static!important;
+ width:auto!important;
+ margin:0!important;
+ padding:0!important;
+ display:flex!important;
+ justify-content:flex-end!important;
+ align-items:center!important;
+ gap:6px!important;
+}
+.client-top-right .card-wa-btn,
+.client-top-right .edit-job-btn,
+.client-top-right .delivered-btn,
+.client-top-right .delete-job-btn{
+ flex:0 0 30px!important;
+ width:30px!important;height:30px!important;
+ min-width:30px!important;min-height:30px!important;
+ max-width:30px!important;max-height:30px!important;
+ padding:0!important;margin:0!important;
+ display:inline-flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ box-sizing:border-box!important;
+}
+.client-name{
+ padding-right:180px!important;
+}
+@media(max-width:520px){
+ .client-top-right{
+  top:10px!important;
+  right:10px!important;
+ }
+ .client-top-right .creator-badge{
+  max-width:135px!important;
+  font-size:8px!important;
+ }
+ .client-name{
+  padding-right:150px!important;
+ }
+ .client-top-right .card-wa-btn,
+ .client-top-right .edit-job-btn,
+ .client-top-right .delivered-btn,
+ .client-top-right .delete-job-btn{
+  width:28px!important;height:28px!important;
+  min-width:28px!important;min-height:28px!important;
+  max-width:28px!important;max-height:28px!important;
+ }
+}
+</style>
+
+<style id="v52-inventory">
+.inventory-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:28px}
+.inventory-add{width:190px;min-height:100px}
+.inventory-tools{display:flex;justify-content:space-between;gap:12px;margin-bottom:18px}
+.inventory-search{display:flex;align-items:center;gap:10px;background:#181818;border:1px solid #303030;border-radius:13px;padding:0 13px;max-width:420px;width:100%}
+.inventory-search span{font-size:20px;color:#888}.inventory-search input{border:0!important;background:transparent!important;padding:12px 0!important;width:100%}
+.inventory-group{margin:24px 0}
+.inventory-group-title{display:flex;align-items:center;gap:10px;margin-bottom:10px;color:#888;font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase}
+.inventory-group-title i{height:1px;background:#292929;flex:1}
+.inventory-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.inventory-item{background:#1b1b1b;border:1px solid #343434;border-radius:16px;padding:16px;display:flex;align-items:center;gap:14px}
+.inventory-item.low{border-color:#5a4a25}.inventory-item.empty{border-color:#5a2929}
+.inventory-item-main{flex:1;min-width:0}.inventory-item-name{font-weight:900;font-size:17px;letter-spacing:-.025em}.inventory-item-measure{font-size:11px;color:#777;margin-top:4px}
+.inventory-qty{font-size:22px;font-weight:950;white-space:nowrap}.inventory-qty small{font-size:10px;color:#777;font-weight:700}
+.inventory-controls{display:flex;gap:5px}.inventory-controls button{width:30px;height:30px;border-radius:9px;border:1px solid #343434;background:#202020;color:#ddd;cursor:pointer;font-weight:900}
+.inventory-controls button:hover{background:#292929}
+.inventory-actions{display:flex;gap:5px;margin-left:4px}.inventory-edit,.inventory-delete{background:transparent!important;border:0!important;color:#777!important;width:26px!important}
+.inventory-edit:hover{color:#d2c46c!important}.inventory-delete:hover{color:#d87575!important}
+.inventory-empty{padding:40px 20px;text-align:center;border:1px dashed #303030;border-radius:18px;color:#666}
+.inventory-type-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.inventory-type{padding:14px;border:1px solid #303030;background:#191919;color:#eee;border-radius:12px;font-weight:800;cursor:pointer}.inventory-type:hover{background:#252525}
+@media(max-width:650px){.inventory-head{display:block}.inventory-add{width:100%;min-height:72px;margin-top:18px}.inventory-list{grid-template-columns:1fr}.inventory-item{padding:13px}.inventory-qty{font-size:19px}}
+</style>
+
+<style id="v53-inventory-measure">
+/* Give Medida / presentación more visual weight */
+#invMeasure{
+  min-height:48px!important;
+  padding:13px 14px!important;
+  font-size:15px!important;
+  font-weight:600!important;
+  border-radius:13px!important;
+}
+#invMeasure::placeholder{color:#777!important;font-size:14px!important}
+</style>
+
+<style id="v54-quotes">
+.quote-command{align-items:stretch!important}
+.quote-command .command-copy{flex:1;min-width:0}
+.quick-actions{display:flex;align-items:stretch;gap:10px;flex:none;height:100%}
+.quote-hero{width:58px;min-height:128px;border-radius:20px;border:1px solid #333;background:#171717!important;color:#cfcfcf!important;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:10px 7px;transition:.18s ease;box-shadow:0 12px 32px rgba(0,0,0,.28)}
+.quote-hero:hover{background:#202020!important;border-color:#4a4a4a;transform:translateY(-3px)}
+.quote-hero span{font-size:11px;line-height:.9;font-weight:900;letter-spacing:.08em;text-align:center}
+.quote-pending-head{display:flex;align-items:center;gap:8px;margin-top:22px;font-size:11px;color:#888;font-weight:800}
+.quote-pending-head b{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;border-radius:999px;background:#252525;color:#eee;font-size:10px}
+.quote-list{display:flex;gap:8px;margin-top:8px;overflow-x:auto;padding-bottom:2px}
+.quote-item{flex:0 0 190px;background:#141414;border:1px solid #2d2d2d;border-radius:12px;padding:10px;position:relative;overflow:hidden}
+.quote-item-name{font-size:12px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.quote-item-desc{font-size:10px;color:#777;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.quote-item-user{font-size:9px;color:#777;margin-top:7px}
+.quote-progress{height:3px;background:#282828;border-radius:99px;overflow:hidden;margin-top:8px}.quote-progress>div{height:100%;background:#d1d1d1;border-radius:99px}
+@media(max-width:700px){.quote-command{display:block!important}.quick-actions{height:74px;margin-top:18px}.new-client-hero{width:auto!important;flex:1;min-height:74px!important}.quote-hero{width:58px;min-height:74px}.quote-list{margin-top:8px}}
+</style>
+
+<style id="v55-quote-style">
+/* Quote button: same height and white treatment as Crear una orden */
+.quick-actions{
+  align-items:stretch!important;
+}
+.quick-actions .new-client-hero,
+.quick-actions .quote-hero{
+  height:128px!important;
+  min-height:128px!important;
+  max-height:128px!important;
+  box-sizing:border-box!important;
+}
+.quick-actions .quote-hero{
+  width:58px!important;
+  background:#f4f4f4!important;
+  color:#0a0a0a!important;
+  border:0!important;
+  border-radius:20px!important;
+  box-shadow:0 16px 40px rgba(0,0,0,.35)!important;
+}
+.quick-actions .quote-hero:hover{
+  background:#fff!important;
+  border-color:transparent!important;
+}
+
+/* Pending quotes is now a single compact button, not a heading/list */
+.quote-pending-head{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  width:100%!important;
+  box-sizing:border-box!important;
+  margin-top:20px!important;
+  padding:12px 14px!important;
+  border:1px solid #555!important;
+  border-radius:13px!important;
+  background:#a9a9a9!important;
+  color:#171717!important;
+  cursor:pointer!important;
+  transition:background .18s ease,border-color .18s ease,color .18s ease!important;
+}
+.quote-pending-head:hover{
+  border-color:#666!important;
+  filter:brightness(1.04);
+}
+.quote-pending-head span{
+  font-size:11px!important;
+  font-weight:900!important;
+  letter-spacing:.02em!important;
+}
+.quote-pending-head b{
+  display:grid!important;
+  place-items:center!important;
+  min-width:25px!important;
+  height:25px!important;
+  padding:0 7px!important;
+  border-radius:999px!important;
+  background:#737373!important;
+  color:#fff!important;
+  font-size:11px!important;
+  transition:background .18s ease!important;
+}
+
+/* 0–8 pending quotes: neutral gray → progressively stronger red */
+.quote-pending-head.qp-0{background:#a9a9a9!important;border-color:#777!important}
+.quote-pending-head.qp-1{background:#a9a1a1!important;border-color:#846f6f!important}
+.quote-pending-head.qp-2{background:#ad9999!important;border-color:#8b6969!important}
+.quote-pending-head.qp-3{background:#b38f8f!important;border-color:#925d5d!important}
+.quote-pending-head.qp-4{background:#b88484!important;border-color:#995353!important}
+.quote-pending-head.qp-5{background:#bd7777!important;border-color:#a04747!important}
+.quote-pending-head.qp-6{background:#c46969!important;border-color:#a63a3a!important}
+.quote-pending-head.qp-7{background:#c95858!important;border-color:#aa2c2c!important}
+.quote-pending-head.qp-8{background:#cf4545!important;border-color:#b21f1f!important}
+.quote-pending-head[class*="qp-"] b{background:rgba(55,0,0,.38)!important}
+
+/* Hide the old visible quote cards from the dashboard; the button is the entry point. */
+.quote-list{display:none!important}
+
+@media(max-width:700px){
+ .quick-actions .new-client-hero,
+ .quick-actions .quote-hero{
+   height:74px!important;
+   min-height:74px!important;
+   max-height:74px!important;
+ }
+ .quick-actions .quote-hero{width:58px!important}
+}
+</style>
+
+<style id="v56-quote-refinement">
+/* Preserve the premium dashboard hierarchy: quote action is secondary */
+.quick-actions{
+  gap:8px!important;
+  align-items:stretch!important;
+}
+.quick-actions .new-client-hero{
+  position:relative;
+  z-index:2;
+}
+.quick-actions .quote-hero{
+  width:42px!important;
+  min-width:42px!important;
+  max-width:42px!important;
+  height:128px!important;
+  min-height:128px!important;
+  max-height:128px!important;
+  padding:7px 4px!important;
+  border-radius:16px!important;
+  background:#e7e7e7!important;
+  color:#151515!important;
+  border:1px solid #d0d0d0!important;
+  box-shadow:0 8px 24px rgba(0,0,0,.20)!important;
+  opacity:.88;
+}
+.quick-actions .quote-hero:hover{
+  background:#f0f0f0!important;
+  opacity:1;
+  transform:translateY(-2px);
+}
+.quick-actions .quote-hero span{
+  font-size:9px!important;
+  letter-spacing:.04em!important;
+  line-height:.88!important;
+}
+
+/* Pending quotes: only becomes a button when there is at least one */
+.quote-pending-head{
+  display:none!important;
+  width:auto!important;
+  max-width:330px!important;
+  padding:8px 11px!important;
+  margin-top:16px!important;
+  border-radius:11px!important;
+  min-height:34px!important;
+}
+.quote-pending-head.has-quotes{
+  display:flex!important;
+}
+
+/* Start from a darker neutral gray and gradually introduce red */
+.quote-pending-head.qp-1{background:#4a4a4a!important;border-color:#5a5a5a!important;color:#eee!important}
+.quote-pending-head.qp-2{background:#514747!important;border-color:#655656!important;color:#eee!important}
+.quote-pending-head.qp-3{background:#5b4646!important;border-color:#704f4f!important;color:#eee!important}
+.quote-pending-head.qp-4{background:#664343!important;border-color:#7d4b4b!important;color:#eee!important}
+.quote-pending-head.qp-5{background:#713d3d!important;border-color:#8b4545!important;color:#fff!important}
+.quote-pending-head.qp-6{background:#7c3737!important;border-color:#994040!important;color:#fff!important}
+.quote-pending-head.qp-7{background:#893030!important;border-color:#a43a3a!important;color:#fff!important}
+.quote-pending-head.qp-8{background:#962929!important;border-color:#b03232!important;color:#fff!important}
+
+.quote-pending-head b{
+  min-width:22px!important;
+  height:22px!important;
+  padding:0 6px!important;
+  background:rgba(0,0,0,.28)!important;
+}
+
+@media(max-width:700px){
+ .quick-actions .quote-hero{
+   width:38px!important;
+   min-width:38px!important;
+   max-width:38px!important;
+   height:74px!important;
+   min-height:74px!important;
+   max-height:74px!important;
+   border-radius:14px!important;
+ }
+}
+</style>
+
+<style id="v57-quotes-modal">
+.quotes-modal{max-width:620px!important;width:min(620px,calc(100% - 28px))!important}
+.quotes-modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:18px}
+.quote-modal-item{
+ background:#191919;border:1px solid #303030;border-radius:14px;padding:14px;margin-bottom:9px;
+}
+.quote-modal-top{display:flex;justify-content:space-between;gap:12px;align-items:center}
+.quote-modal-name{font-size:15px;font-weight:900}
+.quote-modal-user{font-size:10px;color:#888}
+.quote-modal-desc{font-size:12px;color:#999;margin-top:6px}
+.quote-modal-time{font-size:10px;color:#777;margin-top:9px}
+.quote-modal-progress{height:4px;background:#292929;border-radius:99px;overflow:hidden;margin-top:8px}
+.quote-modal-progress>div{height:100%;background:#999}
+.quote-modal-empty{text-align:center;padding:30px;color:#777}
+</style>
+
+<style id="v58-mobile">
+/* =========================================================
+   MOBILE / SMALL SCREEN — dedicated layout
+   ========================================================= */
+@media (max-width: 680px){
+
+  html,body{
+    width:100%!important;
+    min-width:0!important;
+    overflow-x:hidden!important;
+  }
+
+  body{
+    font-size:14px!important;
+  }
+
+  .hero{
+    width:100%!important;
+    max-width:none!important;
+    box-sizing:border-box!important;
+    padding-left:14px!important;
+    padding-right:14px!important;
+  }
+
+  /* Dashboard */
+  .dashboard-home{
+    padding:22px 14px 40px!important;
+  }
+  .dashboard-topbar{
+    display:block!important;
+    margin-bottom:20px!important;
+  }
+  .dashboard-title{
+    font-size:40px!important;
+    line-height:.94!important;
+    letter-spacing:-.065em!important;
+  }
+  .dashboard-subtitle{
+    font-size:13px!important;
+    line-height:1.4!important;
+    max-width:300px!important;
+  }
+
+  .dashboard-command{
+    display:block!important;
+    min-height:0!important;
+    padding:18px!important;
+    border-radius:20px!important;
+  }
+  .command-title{
+    font-size:25px!important;
+  }
+  .command-text{
+    font-size:11px!important;
+    line-height:1.45!important;
+  }
+
+  .quick-actions{
+    display:flex!important;
+    width:100%!important;
+    height:74px!important;
+    margin-top:17px!important;
+    gap:8px!important;
+  }
+  .quick-actions .new-client-hero{
+    flex:1 1 auto!important;
+    width:auto!important;
+    min-width:0!important;
+    height:74px!important;
+    min-height:74px!important;
+    max-height:74px!important;
+    padding:12px 14px!important;
+    border-radius:15px!important;
+  }
+  .quick-actions .new-client-hero strong{
+    font-size:15px!important;
+    margin-top:4px!important;
+  }
+  .quick-actions .new-client-hero small{
+    font-size:10px!important;
+  }
+  .quick-actions .new-client-hero span{
+    font-size:20px!important;
+  }
+  .quick-actions .new-client-hero b{
+    top:13px!important;
+    right:13px!important;
+  }
+
+  .quick-actions .quote-hero{
+    flex:0 0 38px!important;
+    width:38px!important;
+    min-width:38px!important;
+    max-width:38px!important;
+    height:74px!important;
+    min-height:74px!important;
+    max-height:74px!important;
+    border-radius:14px!important;
+    padding:5px 3px!important;
+  }
+
+  .quote-pending-head{
+    max-width:100%!important;
+    width:100%!important;
+    margin-top:14px!important;
+    min-height:32px!important;
+    padding:7px 10px!important;
+    border-radius:10px!important;
+  }
+
+  .quote-pending-head span{
+    font-size:10px!important;
+  }
+
+  .quote-pending-head b{
+    min-width:21px!important;
+    height:21px!important;
+  }
+
+  .dashboard-section-label{
+    margin:24px 0 11px!important;
+    font-size:9px!important;
+  }
+
+  .dashboard-grid{
+    grid-template-columns:1fr 1fr!important;
+    gap:9px!important;
+  }
+
+  .dashboard-tile{
+    min-height:160px!important;
+    padding:15px!important;
+    border-radius:16px!important;
+  }
+  .tile-icon{
+    width:31px!important;
+    height:31px!important;
+    right:11px!important;
+    top:11px!important;
+    border-radius:10px!important;
+    font-size:14px!important;
+  }
+  .tile-meta{
+    font-size:8px!important;
+    margin-bottom:6px!important;
+  }
+  .tile-title{
+    font-size:20px!important;
+    letter-spacing:-.045em!important;
+  }
+  .tile-desc{
+    font-size:10px!important;
+    line-height:1.35!important;
+    margin-top:7px!important;
+  }
+  .tile-bottom{
+    margin-top:12px!important;
+    font-size:9px!important;
+  }
+
+  /* Active client cards */
+  #clients{
+    width:100%!important;
+  }
+  .client{
+    width:100%!important;
+    box-sizing:border-box!important;
+    padding:14px!important;
+    margin-left:0!important;
+    margin-right:0!important;
+    border-radius:16px!important;
+  }
+
+  .client-name{
+    font-size:20px!important;
+    line-height:1.08!important;
+    padding-right:125px!important;
+    overflow-wrap:anywhere!important;
+  }
+
+  .client-top-right{
+    top:10px!important;
+    right:10px!important;
+    gap:5px!important;
+  }
+  .client-top-right .creator-badge{
+    max-width:115px!important;
+    font-size:8px!important;
+  }
+  .client-top-right .client-actions{
+    gap:5px!important;
+  }
+  .client-top-right .card-wa-btn,
+  .client-top-right .edit-job-btn,
+  .client-top-right .delivered-btn,
+  .client-top-right .delete-job-btn{
+    width:28px!important;
+    height:28px!important;
+    min-width:28px!important;
+    min-height:28px!important;
+    max-width:28px!important;
+    max-height:28px!important;
+  }
+
+  .client .small,
+  .client p{
+    font-size:11px!important;
+    line-height:1.45!important;
+  }
+
+  .progress-bg{
+    margin-top:8px!important;
+  }
+
+  /* New client / quote form */
+  #new{
+    padding-top:20px!important;
+  }
+  #new form,
+  #new .form,
+  #new .card{
+    width:100%!important;
+    box-sizing:border-box!important;
+  }
+  #new input,
+  #new textarea,
+  #new select{
+    width:100%!important;
+    box-sizing:border-box!important;
+  }
+
+  .payment-methods{
+    display:grid!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:5px!important;
+  }
+  .payment-btn{
+    min-width:0!important;
+    padding:8px 4px!important;
+    font-size:9px!important;
+  }
+
+  /* Inventory */
+  #inventory{
+    padding-top:20px!important;
+  }
+  .inventory-head{
+    display:block!important;
+  }
+  .inventory-add{
+    width:100%!important;
+    min-height:70px!important;
+    margin-top:16px!important;
+  }
+  .inventory-tools{
+    margin-top:14px!important;
+  }
+  .inventory-search{
+    max-width:none!important;
+  }
+  .inventory-list{
+    grid-template-columns:1fr!important;
+  }
+  .inventory-item{
+    min-width:0!important;
+    padding:12px!important;
+    gap:8px!important;
+  }
+  .inventory-item-name{
+    font-size:15px!important;
+  }
+  .inventory-item-measure{
+    font-size:10px!important;
+  }
+  .inventory-qty{
+    font-size:17px!important;
+  }
+  .inventory-controls{
+    gap:3px!important;
+  }
+  .inventory-controls button{
+    width:28px!important;
+    height:28px!important;
+  }
+
+  /* Finance / history */
+  #finance,#history{
+    padding-left:14px!important;
+    padding-right:14px!important;
+  }
+
+  .history-card,
+  #history .client{
+    width:100%!important;
+    box-sizing:border-box!important;
+  }
+
+  /* Modals */
+  .modal-overlay{
+    padding:12px!important;
+    box-sizing:border-box!important;
+  }
+  .modal{
+    width:100%!important;
+    max-width:none!important;
+    max-height:calc(100vh - 24px)!important;
+    overflow-y:auto!important;
+    border-radius:18px!important;
+    box-sizing:border-box!important;
+  }
+
+  .quotes-modal{
+    width:100%!important;
+  }
+  .quote-modal-item{
+    padding:12px!important;
+  }
+
+  /* Avoid accidental horizontal overflow from tables/calendar */
+  .calendar,
+  .calendar-grid,
+  .finance-calendar{
+    max-width:100%!important;
+    overflow-x:auto!important;
+  }
+}
+
+/* Very small phones */
+@media (max-width:390px){
+  .dashboard-title{
+    font-size:35px!important;
+  }
+  .dashboard-grid{
+    gap:7px!important;
+  }
+  .dashboard-tile{
+    min-height:148px!important;
+    padding:13px!important;
+  }
+  .tile-title{
+    font-size:18px!important;
+  }
+  .client-name{
+    padding-right:112px!important;
+    font-size:18px!important;
+  }
+  .client-top-right .creator-badge{
+    max-width:100px!important;
+  }
+}
+</style>
+
+<style id="v59-mobile-redesign">
+/* =========================================================
+   V59 — Mobile-first visual composition
+   ========================================================= */
+@media (max-width: 680px){
+
+  body{
+    overflow-x:hidden!important;
+  }
+
+  main{
+    width:100%!important;
+    max-width:none!important;
+    padding:0!important;
+  }
+
+  .hero{
+    width:100%!important;
+    min-height:100vh!important;
+    padding:18px 14px 34px!important;
+    border-radius:0!important;
+  }
+
+  /* ---------- DASHBOARD ---------- */
+  .dashboard-home{
+    padding:22px 14px 40px!important;
+  }
+
+  .dashboard-topbar{
+    display:block!important;
+    margin:0 2px 20px!important;
+  }
+
+  .brand-eyebrow{
+    font-size:8px!important;
+    letter-spacing:.20em!important;
+    margin-bottom:9px!important;
+  }
+
+  .dashboard-title{
+    font-size:36px!important;
+    line-height:.92!important;
+    letter-spacing:-.065em!important;
+  }
+
+  .dashboard-subtitle{
+    font-size:12px!important;
+    line-height:1.45!important;
+    margin-top:10px!important;
+    max-width:285px!important;
+  }
+
+  /* The quick-action card becomes a clean vertical module */
+  .dashboard-command{
+    display:block!important;
+    width:100%!important;
+    min-height:0!important;
+    padding:18px!important;
+    border-radius:20px!important;
+    box-shadow:0 16px 40px rgba(0,0,0,.28)!important;
+  }
+
+  .command-kicker{
+    font-size:8px!important;
+  }
+
+  .command-title{
+    font-size:24px!important;
+    line-height:1!important;
+    margin-top:6px!important;
+  }
+
+  .command-text{
+    max-width:270px!important;
+    font-size:10px!important;
+    line-height:1.45!important;
+    margin-top:7px!important;
+  }
+
+  .quick-actions{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) 36px!important;
+    gap:7px!important;
+    width:100%!important;
+    height:68px!important;
+    margin-top:16px!important;
+  }
+
+  .quick-actions .new-client-hero{
+    width:100%!important;
+    height:68px!important;
+    min-height:68px!important;
+    max-height:68px!important;
+    padding:10px 13px!important;
+    border-radius:14px!important;
+  }
+
+  .quick-actions .new-client-hero span{
+    display:inline!important;
+    font-size:19px!important;
+    margin-right:5px!important;
+  }
+
+  .quick-actions .new-client-hero strong{
+    display:inline!important;
+    font-size:14px!important;
+    margin:0!important;
+  }
+
+  .quick-actions .new-client-hero small{
+    display:block!important;
+    font-size:9px!important;
+    margin:3px 0 0 25px!important;
+  }
+
+  .quick-actions .new-client-hero b{
+    right:12px!important;
+    top:11px!important;
+    font-size:15px!important;
+  }
+
+  .quick-actions .quote-hero{
+    width:36px!important;
+    min-width:36px!important;
+    max-width:36px!important;
+    height:68px!important;
+    min-height:68px!important;
+    max-height:68px!important;
+    border-radius:13px!important;
+    padding:4px 2px!important;
+  }
+
+  .quick-actions .quote-hero span{
+    font-size:8px!important;
+    line-height:.84!important;
+  }
+
+  .quote-pending-head.has-quotes{
+    width:100%!important;
+    max-width:none!important;
+    min-height:32px!important;
+    margin-top:12px!important;
+    padding:6px 9px!important;
+    border-radius:9px!important;
+  }
+
+  .quote-pending-head span{
+    font-size:9px!important;
+  }
+
+  .quote-pending-head b{
+    min-width:20px!important;
+    height:20px!important;
+    font-size:9px!important;
+  }
+
+  .dashboard-section-label{
+    margin:25px 2px 11px!important;
+    font-size:8px!important;
+    gap:9px!important;
+  }
+
+  /* Four sections remain visible, but with enough room to breathe */
+  .dashboard-grid{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:8px!important;
+  }
+
+  .dashboard-tile{
+    min-height:145px!important;
+    padding:14px!important;
+    border-radius:16px!important;
+    box-shadow:0 8px 22px rgba(0,0,0,.20)!important;
+  }
+
+  .tile-icon{
+    width:30px!important;
+    height:30px!important;
+    right:10px!important;
+    top:10px!important;
+    border-radius:9px!important;
+    font-size:14px!important;
+  }
+
+  .tile-meta{
+    font-size:7px!important;
+    letter-spacing:.14em!important;
+    margin-bottom:5px!important;
+  }
+
+  .tile-title{
+    font-size:19px!important;
+    letter-spacing:-.045em!important;
+  }
+
+  .tile-desc{
+    font-size:9px!important;
+    line-height:1.3!important;
+    margin-top:6px!important;
+    max-width:145px!important;
+  }
+
+  .tile-bottom{
+    margin-top:10px!important;
+    font-size:8px!important;
+  }
+
+  .tile-bottom>b{
+    font-size:15px!important;
+  }
+
+  .tile-action{
+    padding:5px 7px!important;
+    font-size:8px!important;
+    border-radius:7px!important;
+  }
+
+  /* ---------- CLIENT CARDS ---------- */
+  #clients{
+    margin-top:14px!important;
+  }
+
+  .client{
+    width:100%!important;
+    margin:9px 0 0!important;
+    padding:14px!important;
+    border-radius:16px!important;
+    overflow:hidden!important;
+  }
+
+  .client-name{
+    font-size:19px!important;
+    line-height:1.08!important;
+    padding-right:112px!important;
+    margin-bottom:6px!important;
+  }
+
+  .client-top-right{
+    top:9px!important;
+    right:9px!important;
+    gap:4px!important;
+  }
+
+  .client-top-right .creator-badge{
+    max-width:105px!important;
+    padding:3px 7px!important;
+    font-size:7px!important;
+  }
+
+  .client-top-right .client-actions{
+    gap:4px!important;
+  }
+
+  .client-top-right .card-wa-btn,
+  .client-top-right .edit-job-btn,
+  .client-top-right .delivered-btn,
+  .client-top-right .delete-job-btn{
+    width:27px!important;
+    height:27px!important;
+    min-width:27px!important;
+    min-height:27px!important;
+    max-width:27px!important;
+    max-height:27px!important;
+  }
+
+  .client .small,
+  .client p{
+    font-size:10px!important;
+    line-height:1.4!important;
+  }
+
+  /* ---------- FORMS ---------- */
+  #new{
+    padding:18px 14px 34px!important;
+  }
+
+  #new h1,
+  #history h1,
+  #finance h1{
+    font-size:34px!important;
+    line-height:.95!important;
+    letter-spacing:-.055em!important;
+  }
+
+  #new input,
+  #new textarea,
+  #new select{
+    width:100%!important;
+    max-width:100%!important;
+    font-size:14px!important;
+  }
+
+  #new textarea{
+    min-height:125px!important;
+  }
+
+  #new > div[style*="display:flex"]{
+    width:100%!important;
+  }
+
+  #new #wa{
+    min-width:0!important;
+  }
+
+  #new #waBtn{
+    flex:0 0 72px!important;
+    padding:10px 7px!important;
+    font-size:10px!important;
+  }
+
+  .deposit-row{
+    display:block!important;
+  }
+
+  .deposit-row #deposit{
+    width:100%!important;
+    min-width:0!important;
+  }
+
+  .payment-methods{
+    display:grid!important;
+    grid-template-columns:repeat(4,1fr)!important;
+    gap:5px!important;
+    margin-top:7px!important;
+  }
+
+  .payment-btn{
+    width:100%!important;
+    min-width:0!important;
+    padding:8px 2px!important;
+    font-size:8px!important;
+  }
+
+  /* ---------- INVENTORY ---------- */
+  #inventory{
+    padding:18px 14px 34px!important;
+  }
+
+  #inventory .dashboard-title{
+    font-size:34px!important;
+  }
+
+  .inventory-head{
+    display:block!important;
+  }
+
+  .inventory-add{
+    width:100%!important;
+    min-height:64px!important;
+    margin-top:15px!important;
+  }
+
+  .inventory-search{
+    max-width:none!important;
+    width:100%!important;
+  }
+
+  .inventory-list{
+    grid-template-columns:1fr!important;
+    gap:8px!important;
+  }
+
+  .inventory-item{
+    padding:11px!important;
+    border-radius:14px!important;
+  }
+
+  .inventory-item-name{
+    font-size:14px!important;
+  }
+
+  .inventory-qty{
+    font-size:16px!important;
+  }
+
+  /* ---------- HISTORY / FINANCE ---------- */
+  #history,#finance{
+    padding:18px 14px 34px!important;
+  }
+
+  #history .card{
+    padding:12px!important;
+  }
+
+  /* ---------- MODALS ---------- */
+  .modal-overlay{
+    padding:10px!important;
+    align-items:flex-end!important;
+  }
+
+  .modal{
+    width:100%!important;
+    max-width:none!important;
+    max-height:88vh!important;
+    overflow-y:auto!important;
+    padding:18px!important;
+    border-radius:20px 20px 14px 14px!important;
+  }
+
+  .quotes-modal{
+    width:100%!important;
+  }
+
+  .quotes-modal-head h2{
+    font-size:21px!important;
+  }
+}
+
+/* Extra-small devices */
+@media(max-width:380px){
+  .dashboard-title{font-size:33px!important}
+  .dashboard-grid{gap:7px!important}
+  .dashboard-tile{min-height:138px!important;padding:12px!important}
+  .tile-title{font-size:18px!important}
+  .tile-desc{font-size:8px!important}
+  .quick-actions{grid-template-columns:minmax(0,1fr) 34px!important}
+  .quick-actions .quote-hero{width:34px!important;min-width:34px!important}
+  .client-name{padding-right:105px!important;font-size:18px!important}
+}
+</style>
+
+<style id="v60-quotes-fix">
+/* ---------- NEW QUOTE BUTTON ---------- */
+.quick-actions .quote-hero{
+  width:78px!important;
+  min-width:78px!important;
+  max-width:78px!important;
+  height:128px!important;
+  min-height:128px!important;
+  max-height:128px!important;
+  padding:10px 8px!important;
+  border-radius:16px!important;
+  background:#f1f1f1!important;
+  color:#111!important;
+  border:1px solid #d5d5d5!important;
+  box-shadow:0 8px 24px rgba(0,0,0,.18)!important;
+  opacity:1!important;
+}
+.quick-actions .quote-hero span{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:4px!important;
+  font-size:0!important;
+  line-height:1!important;
+  letter-spacing:0!important;
+}
+.quick-actions .quote-hero span:before{
+  content:"✦";
+  font-size:15px!important;
+  line-height:1!important;
+}
+.quick-actions .quote-hero span:after{
+  content:"Cotizar";
+  font-size:10px!important;
+  font-weight:900!important;
+  letter-spacing:.02em!important;
+  line-height:1!important;
+}
+.quick-actions .quote-hero:hover{
+  background:#fff!important;
+  transform:translateY(-2px);
+  box-shadow:0 11px 28px rgba(0,0,0,.22)!important;
+}
+
+/* ---------- QUOTES MODAL: own scroll container ---------- */
+#quotesModal{
+  overflow:hidden!important;
+  overscroll-behavior:contain!important;
+  touch-action:none!important;
+}
+#quotesModal .quotes-modal{
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+  touch-action:auto!important;
+  max-height:calc(100vh - 48px)!important;
+}
+#quotesModalList{
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+  scrollbar-width:thin!important;
+}
+#quotesModalList::-webkit-scrollbar{width:6px}
+#quotesModalList::-webkit-scrollbar-thumb{background:#444;border-radius:99px}
+.quote-modal-item{position:relative}
+.quote-modal-progress{
+  height:5px!important;
+  background:#292929!important;
+  border-radius:99px!important;
+  overflow:hidden!important;
+}
+.quote-modal-progress>div{
+  height:100%!important;
+  border-radius:99px!important;
+  transition:width .3s linear,background .3s ease!important;
+}
+
+/* Mobile version of the secondary action */
+@media(max-width:680px){
+  .quick-actions .quote-hero{
+    width:72px!important;
+    min-width:72px!important;
+    max-width:72px!important;
+    height:68px!important;
+    min-height:68px!important;
+    max-height:68px!important;
+    border-radius:13px!important;
+  }
+  .quick-actions .quote-hero span:before{font-size:13px!important}
+  .quick-actions .quote-hero span:after{font-size:9px!important}
+  #quotesModal .quotes-modal{
+    max-height:88vh!important;
+  }
+}
+</style>
+</head>
+<body>
+<header>IMAGEN 3D</header>
+<main>
+
+
+<section id="home" class="hero dashboard-home">
+  <div class="dashboard-topbar">
+    <div>
+      <div class="brand-eyebrow">IMAGEN 3D · OPERACIONES</div>
+      <h1 class="dashboard-title">Todo bajo control.</h1>
+      <p class="dashboard-subtitle">Clientes, entregas y dinero. En un solo lugar.</p>
+    </div>
+    <div class="dashboard-status"><span></span> Sistema activo</div>
+  </div>
+
+  <div class="dashboard-command quote-command">
+    <div class="command-copy">
+      <div class="command-kicker">ACCIÓN RÁPIDA</div>
+      <div class="command-title">¿Nuevo trabajo?</div>
+      <div class="command-text">Crea el cliente, registra el pedido y deja todo listo para el equipo.</div>
+      <button id="quotePendingBtn" class="quote-pending-head qp-0" type="button" aria-label="Ver cotizaciones pendientes">
+        <span>Cotizaciones pendientes</span><b id="quoteCount">0</b>
+      </button>
+      <div id="quoteList" class="quote-list"></div>
+    </div>
+    <div class="quick-actions">
+      <button id="newClientBtn" class="new-client-hero" type="button"><span>＋</span><strong>Nuevo cliente</strong><small>Crear una orden</small><b>↗</b></button>
+      <button id="newQuoteBtn" class="quote-hero" type="button" aria-label="Nueva cotización"><span>C<br>O<br>T<br>I<br>Z<br>A<br>C<br>I<br>Ó<br>N</span></button>
+    </div>
+  </div>
+
+  <div class="dashboard-section-label">
+    <span>Centro de operaciones</span>
+    <i></i>
+  </div>
+
+  <div class="dashboard-grid">
+    <div class="dashboard-tile tile-clients">
+      <div class="tile-icon">⌕</div>
+      <div class="tile-meta">EN CURSO</div>
+      <div class="tile-title">Clientes</div>
+      <div class="tile-desc">Trabajos activos y órdenes pendientes</div>
+      <div class="tile-bottom">
+        <span id="count">0 registrados</span>
+        <button id="searchBtn" class="tile-action" type="button" aria-label="Buscar clientes">Buscar <b>↗</b></button>
+        <button id="clearSearchBtnTop" class="search-close-btn hidden" type="button" aria-label="Salir de búsqueda">✕</button>
+      </div>
+    </div>
+
+    <div class="dashboard-tile tile-history" id="historyBtn" role="button" tabindex="0">
+      <div class="tile-icon">↗</div>
+      <div class="tile-meta">ARCHIVO</div>
+      <div class="tile-title">Historial</div>
+      <div class="tile-desc">Todos los trabajos entregados</div>
+      <div class="tile-bottom"><span>Trabajos terminados</span><b>→</b></div>
+    </div>
+
+    <button id="inventoryBtn" class="dashboard-tile tile-inventory" type="button">
+      <div class="tile-icon">◫</div>
+      <div class="tile-meta">BODEGA</div>
+      <div class="tile-title">Inventario</div>
+      <div class="tile-desc">Materiales, existencias y movimientos</div>
+      <div class="tile-bottom"><span>Control simple</span><b>→</b></div>
+    </button>
+
+    <button id="financeBtn" class="dashboard-tile tile-finance" type="button">
+      <div class="tile-icon">₿</div>
+      <div class="tile-meta">CONTROL</div>
+      <div class="tile-title">Finanzas</div>
+      <div class="tile-desc">Caja, gastos, inversiones y rendimiento</div>
+      <div class="tile-bottom"><span>Acceso protegido</span><b>→</b></div>
+    </button>
+  </div>
+
+  <div id="clients"></div>
+</section>
+
+
+<section id="inventory" class="hero hidden">
+  <div class="inventory-head">
+    <div>
+      <button class="back" id="inventoryBackBtn" type="button">← Volver</button>
+      <div class="brand-eyebrow" style="margin-top:22px">IMAGEN 3D · BODEGA</div>
+      <h1 class="dashboard-title" style="font-size:42px!important">Inventario.</h1>
+      <p class="dashboard-subtitle">Lo que tenemos. Sin complicaciones.</p>
+    </div>
+    <button id="addInventoryBtn" class="new-client-hero inventory-add" type="button">
+      <span>＋</span><strong>Añadir material</strong><small>Registrar existencias</small><b>↗</b>
+    </button>
+  </div>
+
+  <div class="inventory-tools">
+    <div class="inventory-search">
+      <span>⌕</span><input id="inventorySearch" placeholder="Buscar material...">
+    </div>
+  </div>
+  <div id="inventoryGroups"></div>
+</section>
+
+<div id="inventoryModal" class="modal-overlay hidden" aria-hidden="true">
+  <div class="modal inventory-modal">
+    <h2 id="inventoryModalTitle" style="margin-top:0">Añadir material</h2>
+    <div id="inventoryStep1">
+      <div class="small" style="margin-bottom:12px">¿Qué tipo de material?</div>
+      <div class="inventory-type-grid">
+        <button class="inventory-type" data-type="Lona">Lona</button>
+        <button class="inventory-type" data-type="PVC">PVC</button>
+        <button class="inventory-type" data-type="Acrílico">Acrílico</button>
+        <button class="inventory-type" data-type="Vinilo">Vinilo</button>
+        <button class="inventory-type" data-type="MDF">MDF</button>
+        <button class="inventory-type" data-type="Otro">Otro</button>
+      </div>
+    </div>
+    <div id="inventoryStep2" class="hidden">
+      <label>Material</label>
+      <input id="invName" placeholder="Ej. Lona, Acrílico blanco...">
+      <label>Medida / presentación</label>
+      <input id="invMeasure" placeholder="Ej. 102 cm, 3 mm, rollo...">
+      <label>Unidad</label>
+      <select id="invUnit">
+        <option>rollos</option><option>láminas</option><option>unidades</option><option>cajas</option><option>paquetes</option>
+      </select>
+      <label>Cantidad</label>
+      <input id="invQty" type="number" min="0" step="1" value="1">
+      <label>Stock mínimo <span class="small">(opcional)</span></label>
+      <input id="invMin" type="number" min="0" step="1" value="0">
+      <button id="saveInventoryBtn" class="add-user" type="button">GUARDAR</button>
+      <button id="cancelInventoryBtn" class="cancel-btn" type="button">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="quotesModal" class="modal-overlay hidden" aria-hidden="true">
+  <div class="modal quotes-modal">
+    <div class="quotes-modal-head">
+      <div>
+        <div class="brand-eyebrow">IMAGEN 3D · COTIZACIONES</div>
+        <h2 style="margin:4px 0 0">Cotizaciones pendientes</h2>
+      </div>
+      <button id="closeQuotesModalBtn" class="cancel-btn" type="button">✕</button>
+    </div>
+    <div id="quotesModalList"></div>
+  </div>
+</div>
+
+<section id="new" class="hero hidden">
+<button class="back" id="backHomeBtn" type="button">← Volver</button>
+<h1>Nuevo cliente</h1>
+<div class="small" id="currentUserLabel"></div>
+
+<label>Cliente / Empresa</label>
+<input id="name" placeholder="Nombre del cliente o empresa">
+
+<label>WhatsApp</label>
+<div style="display:flex;gap:8px">
+<input id="wa" placeholder="3001234567" style="flex:1">
+<button id="waBtn" class="back" type="button" disabled style="margin:0">💬 Chat</button>
+</div>
+
+<label>Descripción del trabajo y detalles</label>
+<textarea id="desc" placeholder="Describe lo que necesita el cliente..."></textarea>
+
+<div id="orderOnlyFields">
+<label>Fecha de entrega</label>
+<input id="delivery" type="date">
+
+<label>Valor total</label>
+<input id="total" type="number" min="0" step="1000" placeholder="0">
+
+<label>Abono</label>
+<div class="deposit-row">
+  <input id="deposit" type="number" min="0" step="1000" placeholder="0">
+  <div class="payment-methods" aria-label="Método de abono">
+    <button type="button" class="payment-btn cash" data-method="efectivo">Efectivo</button>
+    <button type="button" class="payment-btn nequi" data-method="nequi">Nequi</button>
+    <button type="button" class="payment-btn bancolombia" data-method="bancolombia">Bancolombia</button>
+    <button type="button" class="payment-btn legacy-payment" data-method="legacy" aria-label="Pago anterior"></button>
+  </div>
+</div>
+<input id="depositMethod" type="hidden" value="efectivo">
+
+<div class="moneybox">
+<b>Resta por cobrar</b>
+<div id="balance" style="font-size:24px;font-weight:900;margin-top:5px">$ 0</div>
+</div></div>
+
+<br>
+<button id="saveClientBtn" class="primary" type="button">CREAR CLIENTE Y ORDEN</button>
+<button id="cancelEditBtn" class="cancel-btn hidden" type="button">Cancelar edición</button>
+</section>
+
+
+
+<section id="history" class="hero hidden">
+<button class="back" id="historyBackBtn" type="button">← Volver</button>
+<h1>Historial</h1>
+<div class="small">Trabajos entregados</div>
+<div class="card" style="margin-top:14px">
+  <div class="search-wrap">
+    <div><b>Buscar en historial</b><br><span class="small" id="historySearchStatus">Todos los trabajos</span></div>
+    <div class="search-actions">
+      <button id="historySearchBtn" class="search-btn" type="button" aria-label="Buscar en historial">🔍</button>
+      <button id="historyClearBtn" class="search-close-btn hidden" type="button" aria-label="Limpiar búsqueda">✕</button>
+    </div>
+  </div>
+</div>
+<div id="historyClients" style="margin-top:16px"></div>
+</section>
+
+<section id="finance" class="hero hidden">
+<button class="back" id="financeBackBtn" type="button">← Volver</button>
+<h1>Finanzas</h1>
+
+<div class="card finance-today">
+  <div class="small">CIERRE DE HOY</div>
+  <div style="font-size:17px;font-weight:800;margin-top:8px">
+    Hoy cerramos caja con:
+  </div>
+  <div id="todayCash" style="font-size:34px;font-weight:900;margin-top:4px">$ 0</div>
+  <div class="small" id="todayCashDetail">Total de abonos del día, menos gastos e inversiones.</div>
+  <div class="small" id="todayCashBreakdown" style="margin-top:8px"></div>
+  <button id="closeCashBtn" class="add-user" type="button">✓ CERRAR CAJA</button>
+  <div id="todayClosed" class="small" style="margin-top:10px"></div>
+</div>
+
+<div class="grid" style="margin-top:12px">
+  <button id="addExpenseBtn" class="card" type="button" style="text-align:left">
+    💸 Añadir gasto<br><span class="small">Registrar una salida de dinero</span>
+  </button>
+  <button id="addInvestmentBtn" class="card" type="button" style="text-align:left">
+    📈 Añadir inversión<br><span class="small">Registrar dinero invertido</span>
+  </button>
+</div>
+
+<button id="viewDiscountsBtn" class="card" type="button" style="width:100%;text-align:left;margin-top:12px">
+  🔎 Ver descuentos<br><span class="small">Consultar gastos e inversiones por período</span>
+</button>
+
+<div class="card" style="margin-top:12px">
+  <div class="small">RESUMEN DEL MES</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px">
+    <div><div class="small">Ingresos</div><b id="monthIncome">$ 0</b></div>
+    <div><div class="small">Gastos</div><b id="monthExpenses">$ 0</b></div>
+    <div><div class="small">Inversiones</div><b id="monthInvestments">$ 0</b></div>
+  </div>
+  <div style="margin-top:12px"><span class="small">Resultado:</span> <b id="monthResult">$ 0</b></div>
+</div>
+
+<div id="discountResults" class="card hidden" style="margin-top:12px">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+    <div class="small">DESCUENTOS DEL PERÍODO</div>
+    <button id="clearDiscountsBtn" type="button" aria-label="Cerrar descuentos"
+      style="width:38px;height:38px;border:0;border-radius:12px;background:#fce8e8;color:#c62828;font-size:21px;font-weight:900;cursor:pointer">✕</button>
+  </div>
+  <div id="discountPeriod" style="font-weight:800;margin-top:6px"></div>
+  <div id="discountTotals" style="margin-top:12px"></div>
+  <div id="discountList" style="margin-top:12px"></div>
+</div>
+
+<div class="card" style="margin-top:12px">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+    <div>
+      <div class="small">CALENDARIO DE CIERRES</div>
+      <h2 id="calendarTitle" style="margin:5px 0 0"></h2>
+    </div>
+    <div style="display:flex;gap:6px">
+      <button id="prevMonthBtn" class="back" type="button" style="margin:0">‹</button>
+      <button id="nextMonthBtn" class="back" type="button" style="margin:0">›</button>
+    </div>
+  </div>
+  <div id="financeCalendar" style="margin-top:14px"></div>
+</div>
+</section>
+
+
+</main>
+
+
+<div id="legacyPaymentModal" class="modal-overlay hidden" aria-hidden="true">
+<div class="modal">
+<h2 style="margin-top:0">Pago anterior</h2>
+<p class="small">Esta opción gris es temporal y sirve para registrar un pago que se realizó antes de empezar a usar esta base de datos.</p>
+<label>Contraseña</label>
+<input id="legacyPaymentPassword" type="password" inputmode="numeric" placeholder="Contraseña">
+<button id="legacyPaymentConfirmBtn" class="add-user" type="button">CONFIRMAR</button>
+<button id="legacyPaymentCancelBtn" class="cancel-btn" type="button">Cancelar</button>
+</div></div>
+
+<div id="deliveryPaymentModal" class="modal-overlay hidden" aria-hidden="true">
+<div class="modal">
+<h2 style="margin-top:0">¿Por qué medio canceló el cliente?</h2>
+<p class="small">Selecciona cómo recibió el saldo restante.</p>
+<div class="payment-methods delivery-payment-options" style="margin-top:14px">
+<button id="deliveryCashBtn" type="button" class="payment-btn cash">Efectivo</button>
+<button id="deliveryNequiBtn" type="button" class="payment-btn nequi">Nequi</button>
+<button id="deliveryBancolombiaBtn" type="button" class="payment-btn bancolombia">Bancolombia</button>
+<button id="deliveryLegacyBtn" type="button" class="payment-btn legacy-payment" aria-label="Pago anterior"></button>
+</div>
+<button id="cancelDeliveryPaymentBtn" class="cancel-btn" type="button" style="margin-top:12px">Cancelar</button>
+</div></div>
+
+<div id="deleteJobModal" class="modal-overlay hidden" aria-hidden="true">
+<div class="modal">
+<h2 style="margin-top:0">Eliminar trabajo</h2>
+<p id="deleteJobText">¿Seguro que quieres eliminar este trabajo?</p>
+<button id="confirmDeleteJobBtn" class="add-user" type="button" style="background:#d94b4b">SÍ, ELIMINAR</button>
+<button id="cancelDeleteJobBtn" class="cancel-btn" type="button">Cancelar</button>
+</div>
+</div>
+
+<div id="cashModal" class="modal-overlay hidden" aria-hidden="true">
+<div class="modal">
+<h2 style="margin-top:0">Cerrar caja</h2>
+<p id="cashConfirmText">¿Seguro que quieres cerrar la caja de hoy?</p>
+<div class="moneybox"><b id="cashConfirmAmount">$ 0</b></div>
+<button id="confirmCashBtn" class="add-user" type="button">SÍ, CERRAR CAJA</button>
+<button id="cancelCashBtn" class="cancel-btn" type="button">Cancelar</button>
+</div>
+</div>
+
+<div id="historySearchModal" class="modal-overlay hidden" aria-hidden="true">
+<div class="modal">
+<h2 style="margin-top:0">¿Cómo prefieres buscar?</h2>
+<button id="historyNameBtn" class="add-user" type="button">POR NOMBRE</button>
+<button id="historyDateBtn" class="add-user" type="button">POR FECHA</button>
+<button id="historyUserBtn" class="add-user" type="button">POR USUARIO</button>
+<button id="historySearchCancelBtn" class="cancel-btn" type="button">Cancelar</button>
+</div>
+</div>
+
+<div id="discountsModal" class="modal-overlay hidden" aria-hidden="true">
+<div class="modal">
+<h2 style="margin-top:0">Ver descuentos</h2>
+<p class="small">Selecciona el período que quieres consultar.</p>
+<label>Desde</label>
+<input id="discountFrom" type="date">
+<label>Hasta</label>
+<input id="discountTo" type="date">
+<button id="searchDiscountsBtn" class="add-user" type="button">VER DESCUENTOS</button>
+<button id="cancelDiscountsBtn" class="cancel-btn" type="button">Cancelar</button>
+</div>
+</div>
+
+<div id="historySearchInputModal" class="modal-overlay hidden" aria-hidden="true">
+<div class="modal">
+<h2 id="historySearchInputTitle" style="margin-top:0">Buscar</h2>
+<label id="historySearchInputLabel">Dato</label>
+<input id="historySearchInput" type="text">
+<div id="historyUserChoices" class="hidden"></div>
+<button id="historyRunSearchBtn" class="add-user" type="button">BUSCAR</button>
+<button id="historySearchInputCancelBtn" class="cancel-btn" type="button">Cancelar</button>
+</div>
+</div>
+
+<div id="moneyModal" class="modal-overlay hidden" aria-hidden="true">
+<div class="modal">
+<h2 id="moneyModalTitle" style="margin-top:0">Añadir gasto</h2>
+<label>Valor</label>
+<input id="moneyAmount" type="number" min="0" step="1000" placeholder="0">
+<label>Descripción</label>
+<input id="moneyDescription" placeholder="Ej. Compra de materiales">
+<button id="saveMoneyBtn" class="add-user" type="button">GUARDAR</button>
+<button id="cancelMoneyBtn" class="cancel-btn" type="button">Cancelar</button>
+</div>
+</div>
+
+<!-- User selector -->
+<div id="userModal" class="modal-overlay hidden" aria-hidden="true">
+<div class="modal">
+<h2 style="margin-top:0">¿Quién eres?</h2>
+<p class="small">Selecciona quién está creando este trabajo.</p>
+<div id="userList"></div>
+<button id="addUserBtn" class="add-user" type="button">＋ AÑADIR USUARIO</button>
+<button id="cancelUserBtn" class="cancel-btn" type="button">Cancelar</button>
+</div>
+</div>
+
+<!-- Finance password -->
+<div id="financeModal" class="modal-overlay hidden" aria-hidden="true">
+<div class="modal">
+<h2 style="margin-top:0">Finanzas</h2>
+<p class="small">Ingresa la contraseña para entrar.</p>
+<label>Contraseña</label>
+<input id="financePassword" type="password" placeholder="Contraseña">
+<button id="financeEnterBtn" class="add-user" type="button">ENTRAR</button>
+<button id="financeCancelBtn" class="cancel-btn" type="button">Cancelar</button>
+</div>
+</div>
+
+
+<div id="searchModal" class="modal-overlay hidden" aria-hidden="true">
+<div class="modal">
+<h2 style="margin-top:0">¿Cómo prefieres buscar?</h2>
+<button id="searchNameBtn" class="add-user" type="button">POR NOMBRE</button>
+<button id="searchUserBtn" class="add-user" type="button">POR USUARIO</button>
+<button id="searchDateBtn" class="add-user" type="button">POR FECHA</button>
+<button id="searchCancelBtn" class="cancel-btn" type="button">Cancelar</button>
+</div>
+</div>
+
+
+<div id="searchInputModal" class="modal-overlay hidden" aria-hidden="true">
+<div class="modal">
+<h2 id="searchInputTitle" style="margin-top:0">Buscar</h2>
+<label id="searchInputLabel">Escribe el dato</label>
+<div id="searchUserChoices" class="hidden"></div>
+<input id="searchInput" type="text" placeholder="">
+<button id="runSearchBtn" class="add-user" type="button">BUSCAR</button>
+<button id="clearSearchBtn" class="cancel-btn" type="button">Mostrar todos</button>
+</div>
+</div>
+
+<!-- Delivery confirmation -->
+<div id="deliveryModal" class="modal-overlay hidden" aria-hidden="true">
+<div class="modal">
+<h2 style="margin-top:0">Confirmar entrega</h2>
+<p>¿Seguro que ya está entregado?</p>
+<button id="confirmDeliveryBtn" class="add-user" type="button">Sí, entregado</button>
+<button id="cancelDeliveryBtn" class="cancel-btn" type="button">Cancelar</button>
+</div>
+</div>
+
+<script>
+const CLIENTS_KEY="imagen3d_clients";
+const USERS_KEY="imagen3d_users";
+const COLORS_KEY="imagen3d_user_colors";
+const CURRENT_USER_KEY="imagen3d_current_user";
+const CURRENT_COLOR_KEY="imagen3d_current_color";
+const FINANCE_PASSWORD="1234";
+
+const palette=["#2563eb","#e11d48","#16a34a","#9333ea","#ea580c","#0891b2","#111111","#d97706"];
+
+function clients(){
+ try{
+  const value=JSON.parse(localStorage.getItem(CLIENTS_KEY)||"[]");
+  return Array.isArray(value)?value:[];
+ }catch(e){return[]}
+}
+function users(){
+ try{
+  const u=JSON.parse(localStorage.getItem(USERS_KEY)||"null");
+  if(Array.isArray(u)&&u.length)return u;
+ }catch(e){}
+ const u=["Usuario 1","Usuario 2"];
+ localStorage.setItem(USERS_KEY,JSON.stringify(u));
+ return u;
+}
+function colors(){
+ let c=[];
+ try{c=JSON.parse(localStorage.getItem(COLORS_KEY)||"[]")}catch(e){}
+ const u=users();
+ while(c.length<u.length)c.push(palette[c.length%palette.length]);
+ localStorage.setItem(COLORS_KEY,JSON.stringify(c));
+ return c;
+}
+
+const CASH_KEY="imagen3d_cash_closings";
+const EXPENSES_KEY="imagen3d_expenses";
+const INVESTMENTS_KEY="imagen3d_investments";
+let financeMonth = new Date().getMonth();
+let financeYear = new Date().getFullYear();
+let moneyType = "expense";
+
+function readArray(key){
+ try{
+  const value=JSON.parse(localStorage.getItem(key)||"[]");
+  return Array.isArray(value)?value:[];
+ }catch(e){return[]}
+}
+function writeArray(key,value){localStorage.setItem(key,JSON.stringify(value))}
+function dateKey(d=new Date()){
+ const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,"0"),day=String(d.getDate()).padStart(2,"0");
+ return y+"-"+m+"-"+day;
+}
+function sameDay(a,b){return a===b}
+function localDateFromKey(key){
+ const [y,m,d]=key.split("-").map(Number);
+ return new Date(y,m-1,d);
+}
+function monthLabel(year,month){
+ return new Date(year,month,1).toLocaleDateString("es-CO",{month:"long",year:"numeric"});
+}
+function todayMoneyTotal(key){
+ const today=dateKey();
+ return readArray(key).reduce((sum,x)=>x.date===today?sum+(Number(x.amount)||0):sum,0);
+}
+function todayAbonos(){
+ const t=todayMethodTotals();
+ return t.efectivo+t.nequi+t.bancolombia;
+}
+function cashClosings(){return readArray(CASH_KEY)}
+function expenses(){return readArray(EXPENSES_KEY)}
+function investments(){return readArray(INVESTMENTS_KEY)}
+
+
+function openDiscounts(){
+ const today=dateKey();
+ document.getElementById("discountFrom").value=today;
+ document.getElementById("discountTo").value=today;
+ document.getElementById("discountsModal").classList.remove("hidden");
+}
+function closeDiscounts(){document.getElementById("discountsModal").classList.add("hidden")}
+function clearDiscountResults(){
+ const box=document.getElementById("discountResults");
+ if(box)box.classList.add("hidden");
+}
+function renderDiscountResults(from,to){
+ const ex=expenses().filter(x=>x.date>=from&&x.date<=to);
+ const inv=investments().filter(x=>x.date>=from&&x.date<=to);
+ const totalEx=ex.reduce((s,x)=>s+(Number(x.amount)||0),0);
+ const totalInv=inv.reduce((s,x)=>s+(Number(x.amount)||0),0);
+ document.getElementById("discountPeriod").textContent=
+   localDateFromKey(from).toLocaleDateString("es-CO")+" → "+localDateFromKey(to).toLocaleDateString("es-CO");
+ document.getElementById("discountTotals").innerHTML=
+   "<b>Gastos:</b> "+money(totalEx)+" · <b>Inversiones:</b> "+money(totalInv)+" · <b>Total descontado:</b> "+money(totalEx+totalInv);
+ const rows=[...ex.map(x=>({type:"Gasto",...x})),...inv.map(x=>({type:"Inversión",...x}))].sort((a,b)=>a.date.localeCompare(b.date));
+ document.getElementById("discountList").innerHTML=rows.length
+  ? rows.map(x=>'<div style="padding:10px 0;border-bottom:1px solid #eee"><b>'+esc(x.type)+'</b> · '+esc(x.date)+'<br>'+esc(x.description)+' · <b>'+money(x.amount)+'</b></div>').join("")
+  : '<div class="small">No hay gastos ni inversiones en este período.</div>';
+ document.getElementById("discountResults").classList.remove("hidden");
+}
+
+function renderFinance(){
+ const now=new Date();
+ const currentKey=dateKey(now);
+ const gross=todayAbonos();
+ const expensesToday=todayMoneyTotal(EXPENSES_KEY);
+ const investmentsToday=todayMoneyTotal(INVESTMENTS_KEY);
+ const net=gross-expensesToday-investmentsToday;
+
+ document.getElementById("todayCash").textContent=money(net);
+ const methodTotals=todayMethodTotals();
+ const legacyLine=methodTotals.legacy>0 ? " · Pagos anteriores: <b>"+money(methodTotals.legacy)+"</b>" : "";
+ document.getElementById("todayCashBreakdown").innerHTML=
+   "Efectivo: <b>"+money(methodTotals.efectivo)+"</b> · Nequi: <b>"+money(methodTotals.nequi)+"</b> · Bancolombia: <b>"+money(methodTotals.bancolombia)+"</b>"+legacyLine+"<br>Abonos: "+money(gross)+" − Gastos: "+money(expensesToday)+" − Inversiones: "+money(investmentsToday);
+
+ const closed=cashClosings().find(x=>x.date===currentKey);
+ const closedToday=!!closed;
+ ["closeCashBtn","addExpenseBtn","addInvestmentBtn"].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el){el.disabled=closedToday;el.style.opacity=closedToday?"0.5":"1";el.style.cursor=closedToday?"not-allowed":"pointer";}
+ });
+ document.getElementById("todayClosed").textContent=closed
+   ? "✓ Caja cerrada hoy a las "+new Date(closed.closedAt).toLocaleTimeString("es-CO",{hour:"2-digit",minute:"2-digit"})+" por "+money(closed.amount)
+   : "Caja de hoy todavía no está cerrada.";
+
+ const monthPrefix=financeYear+"-"+String(financeMonth+1).padStart(2,"0");
+ const closedMonth=cashClosings().filter(x=>x.date.startsWith(monthPrefix));
+ const expMonth=expenses().filter(x=>x.date.startsWith(monthPrefix));
+ const invMonth=investments().filter(x=>x.date.startsWith(monthPrefix));
+ const incomeMonth=closedMonth.reduce((s,x)=>s+(Number(x.amount)||0),0);
+ const expenseMonth=expMonth.reduce((s,x)=>s+(Number(x.amount)||0),0);
+ const investmentMonth=invMonth.reduce((s,x)=>s+(Number(x.amount)||0),0);
+ document.getElementById("monthIncome").textContent=money(incomeMonth);
+ document.getElementById("monthExpenses").textContent=money(expenseMonth);
+ document.getElementById("monthInvestments").textContent=money(investmentMonth);
+ document.getElementById("monthResult").textContent=money(incomeMonth-expenseMonth-investmentMonth);
+
+ document.getElementById("calendarTitle").textContent=monthLabel(financeYear,financeMonth);
+ renderFinanceCalendar();
+}
+
+function renderFinanceCalendar(){
+ const container=document.getElementById("financeCalendar");
+ const daysInMonth=new Date(financeYear,financeMonth+1,0).getDate();
+ const first=new Date(financeYear,financeMonth,1);
+ // Monday = 0
+ const firstDay=(first.getDay()+6)%7;
+ const names=["Lun","Mar","Mié","Jue","Vie","Sáb","Dom"];
+ const closings=cashClosings();
+ let cells="";
+ for(let i=0;i<firstDay;i++)cells+='<div></div>';
+ for(let day=1;day<=daysInMonth;day++){
+  const key=financeYear+"-"+String(financeMonth+1).padStart(2,"0")+"-"+String(day).padStart(2,"0");
+  const close=closings.find(x=>x.date===key);
+  cells+=`<div style="min-height:78px;border:1px solid #777;border-radius:12px;padding:8px;background:${close?'#dbeee1':'#9c9c9c'}">
+    <div style="font-weight:900">${day}</div>
+    ${close?'<div style="color:#218a46;font-size:12px;font-weight:800;margin-top:5px">✓ Cerrado</div><div style="font-size:12px;margin-top:2px">'+money(close.amount)+'</div>':'<div class="small" style="margin-top:5px">Sin cierre</div>'}
+  </div>`;
+ }
+ container.innerHTML=`<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px">${names.map(n=>'<div class="small" style="text-align:center;font-weight:800">'+n+'</div>').join("")}</div>
+ <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px">${cells}</div>`;
+}
+
+function openCashClose(){
+ const amount=todayAbonos()-todayMoneyTotal(EXPENSES_KEY)-todayMoneyTotal(INVESTMENTS_KEY);
+ document.getElementById("cashConfirmAmount").textContent=money(amount);
+ document.getElementById("cashModal").classList.remove("hidden");
+}
+function closeCashModal(){document.getElementById("cashModal").classList.add("hidden")}
+function confirmCashClose(){
+ const key=dateKey();
+ const arr=cashClosings();
+ const existing=arr.find(x=>x.date===key);
+ if(existing){alert("La caja de hoy ya está cerrada.");closeCashModal();return}
+ const amount=todayAbonos()-todayMoneyTotal(EXPENSES_KEY)-todayMoneyTotal(INVESTMENTS_KEY);
+ arr.push({date:key,amount,closedAt:Date.now(),grossIncome:todayAbonos(),expenses:todayMoneyTotal(EXPENSES_KEY),investments:todayMoneyTotal(INVESTMENTS_KEY)});
+ writeArray(CASH_KEY,arr);
+ closeCashModal();renderFinance();
+}
+
+function openMoneyModal(type){
+ moneyType=type;
+ document.getElementById("moneyModalTitle").textContent=type==="expense"?"Añadir gasto":"Añadir inversión";
+ document.getElementById("moneyDescription").value="";
+ document.getElementById("moneyAmount").value="";
+ document.getElementById("moneyModal").classList.remove("hidden");
+ document.getElementById("moneyAmount").focus();
+}
+function closeMoneyModal(){document.getElementById("moneyModal").classList.add("hidden")}
+function saveMoney(){
+ const amount=Number(document.getElementById("moneyAmount").value)||0;
+ const description=document.getElementById("moneyDescription").value.trim();
+ if(amount<=0){alert("Escribe un valor mayor que cero.");return}
+ if(!description){alert("Escribe una descripción.");return}
+ const record={date:dateKey(),amount,description,createdAt:Date.now(),createdBy:localStorage.getItem(CURRENT_USER_KEY)||"Sin usuario"};
+ const key=moneyType==="expense"?EXPENSES_KEY:INVESTMENTS_KEY;
+ const arr=readArray(key);arr.push(record);writeArray(key,arr);
+ closeMoneyModal();renderFinance();
+}
+
+function money(n){
+ return new Intl.NumberFormat("es-CO",{style:"currency",currency:"COP",maximumFractionDigits:0}).format(Number(n)||0);
+}
+function esc(s){
+ return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+const INVENTORY_KEY="imagen3d_inventory_v1";
+let editingInventoryId=null;
+function inventoryItems(){try{return JSON.parse(localStorage.getItem(INVENTORY_KEY)||"[]")}catch(e){return[]}}
+function saveInventoryItems(a){localStorage.setItem(INVENTORY_KEY,JSON.stringify(a))}
+function openInventory(){document.getElementById("home").classList.add("hidden");document.getElementById("new").classList.add("hidden");document.getElementById("finance").classList.add("hidden");document.getElementById("history").classList.add("hidden");document.getElementById("inventory").classList.remove("hidden");renderInventory()}
+function closeInventory(){document.getElementById("inventory").classList.add("hidden");showHome()}
+function openInventoryModal(){editingInventoryId=null;document.getElementById("inventoryModalTitle").textContent="Añadir material";document.getElementById("inventoryStep1").classList.remove("hidden");document.getElementById("inventoryStep2").classList.add("hidden");document.getElementById("invName").value="";document.getElementById("invMeasure").value="";document.getElementById("invQty").value=1;document.getElementById("invMin").value=0;document.getElementById("inventoryModal").classList.remove("hidden")}
+function chooseInventoryType(type){document.getElementById("inventoryStep1").classList.add("hidden");document.getElementById("inventoryStep2").classList.remove("hidden");document.getElementById("invName").value=type;document.getElementById("invMeasure").value=type==="Lona"?"102 cm":type==="PVC"?"0.30 mm":type==="Acrílico"?"3 mm":"";document.getElementById("invUnit").value=type==="Lona"?"rollos":type==="PVC"||type==="Acrílico"?"láminas":"unidades";document.getElementById("invName").focus()}
+function closeInventoryModal(){document.getElementById("inventoryModal").classList.add("hidden")}
+function saveInventoryItem(){const name=document.getElementById("invName").value.trim();const measure=document.getElementById("invMeasure").value.trim();const unit=document.getElementById("invUnit").value;const qty=Math.max(0,Number(document.getElementById("invQty").value)||0);const min=Math.max(0,Number(document.getElementById("invMin").value)||0);if(!name||!measure){alert("Completa el material y la medida.");return}const a=inventoryItems();if(editingInventoryId!==null){const x=a.find(i=>i.id===editingInventoryId);if(x){x.name=name;x.measure=measure;x.unit=unit;x.qty=qty;x.min=min}}else a.push({id:Date.now(),name,measure,unit,qty,min});saveInventoryItems(a);closeInventoryModal();renderInventory()}
+function changeInventory(id,delta){const a=inventoryItems(),x=a.find(i=>i.id===id);if(!x)return;x.qty=Math.max(0,x.qty+delta);saveInventoryItems(a);renderInventory()}
+function editInventory(id){const x=inventoryItems().find(i=>i.id===id);if(!x)return;editingInventoryId=id;document.getElementById("inventoryModalTitle").textContent="Editar material";document.getElementById("inventoryStep1").classList.add("hidden");document.getElementById("inventoryStep2").classList.remove("hidden");document.getElementById("invName").value=x.name;document.getElementById("invMeasure").value=x.measure;document.getElementById("invUnit").value=x.unit;document.getElementById("invQty").value=x.qty;document.getElementById("invMin").value=x.min;document.getElementById("inventoryModal").classList.remove("hidden")}
+function deleteInventory(id){if(!confirm("¿Eliminar este material del inventario?"))return;saveInventoryItems(inventoryItems().filter(x=>x.id!==id));renderInventory()}
+function renderInventory(){const box=document.getElementById("inventoryGroups"),q=(document.getElementById("inventorySearch").value||"").toLowerCase().trim();const all=inventoryItems().filter(x=>(x.name+" "+x.measure).toLowerCase().includes(q));if(!all.length){box.innerHTML='<div class="inventory-empty">Todavía no hay materiales registrados.<br><span class="small">Pulsa “Añadir material” para empezar.</span></div>';return}const groups={};all.forEach(x=>{const k=x.name.toLowerCase();const family=k.includes("lona")?"LONAS":k.includes("pvc")?"PVC":k.includes("acrí")||k.includes("acri")?"ACRÍLICOS":k.includes("vinil")?"VINILOS":k.includes("mdf")?"MDF":"OTROS";(groups[family]??=[]).push(x)});box.innerHTML=Object.entries(groups).map(([g,items])=>'<div class="inventory-group"><div class="inventory-group-title"><span>'+g+'</span><i></i></div><div class="inventory-list">'+items.map(x=>'<div class="inventory-item '+(x.qty===0?"empty":x.min>0&&x.qty<=x.min?"low":"")+'"><div class="inventory-item-main"><div class="inventory-item-name">'+esc(x.name)+'</div><div class="inventory-item-measure">'+esc(x.measure)+'</div></div><div class="inventory-qty">'+x.qty+' <small>'+esc(x.unit)+'</small></div><div class="inventory-controls"><button onclick="changeInventory('+x.id+',-1)">−</button><button onclick="changeInventory('+x.id+',1)">+</button></div><div class="inventory-actions"><button class="inventory-edit" onclick="editInventory('+x.id+')">✎</button><button class="inventory-delete" onclick="deleteInventory('+x.id+')">⌫</button></div></div>').join("")+'</div></div>').join("")}
+function showHome(){
+ document.getElementById("finance").classList.add("hidden");
+ document.getElementById("history").classList.add("hidden");
+ document.getElementById("home").classList.remove("hidden");
+ document.getElementById("new").classList.add("hidden");
+ render();
+ renderQuotes();
+}
+
+const QUOTES_KEY="imagen3d_quotes_v1";
+let formMode="order";
+function quotes(){try{return JSON.parse(localStorage.getItem(QUOTES_KEY)||"[]")}catch(e){return[]}}
+function saveQuotes(a){localStorage.setItem(QUOTES_KEY,JSON.stringify(a))}
+function openQuoteFlow(){formMode="quote";openUserModal()}
+function showNewMode(mode){
+ formMode=mode;
+ document.getElementById("home").classList.add("hidden");
+ document.getElementById("finance").classList.add("hidden");
+ document.getElementById("history").classList.add("hidden");
+ document.getElementById("inventory").classList.add("hidden");
+ document.getElementById("new").classList.remove("hidden");
+ document.querySelector("#new h1").textContent=mode==="quote"?"Nueva cotización":"Nuevo cliente";
+ document.getElementById("currentUserLabel").textContent=(localStorage.getItem(CURRENT_USER_KEY)||"")?"Usuario: "+localStorage.getItem(CURRENT_USER_KEY):"";
+ document.getElementById("orderOnlyFields").classList.toggle("hidden",mode==="quote");
+ document.getElementById("saveClientBtn").textContent=mode==="quote"?"CREAR COTIZACIÓN":"CREAR CLIENTE Y ORDEN";
+}
+function clearNewForm(){
+ ["name","wa","desc","delivery","total","deposit"].forEach(id=>{const e=document.getElementById(id);if(e)e.value=""});
+ document.getElementById("depositMethod").value="efectivo";setPaymentMethod("efectivo");editingJobId=null;
+ document.getElementById("cancelEditBtn").classList.add("hidden");
+}
+function saveQuote(){
+ const name=document.getElementById("name").value.trim(),wa=document.getElementById("wa").value.trim(),desc=document.getElementById("desc").value.trim();
+ if(!name){alert("Escribe el nombre del cliente o empresa.");return}
+ if(!desc){alert("Escribe la descripción de la cotización.");return}
+ const a=quotes();a.unshift({id:Date.now(),name,wa,desc,createdAt:Date.now(),createdBy:localStorage.getItem(CURRENT_USER_KEY)||"Sin usuario",createdByColor:localStorage.getItem(CURRENT_COLOR_KEY)||"#111111"});
+ saveQuotes(a);clearNewForm();showHome();
+}
+function renderQuotes(){
+ const now=Date.now(),all=quotes(),active=all.filter(q=>now-q.createdAt<86400000);
+ if(active.length!==all.length)saveQuotes(active);
+ const list=document.getElementById("quoteList"),count=document.getElementById("quoteCount");
+ if(!list||!count)return;
+ count.textContent=active.length;
+ const pendingBtn=document.getElementById("quotePendingBtn");
+ if(pendingBtn){
+   pendingBtn.className="quote-pending-head qp-"+Math.min(8,active.length)+(active.length>0?" has-quotes":"");
+   pendingBtn.setAttribute("aria-label","Ver "+active.length+" cotizaciones pendientes");
+ }
+ list.innerHTML=active.map(q=>{
+  const elapsed=now-q.createdAt,pct=Math.max(0,Math.min(100,elapsed/86400000));
+  const rem=Math.max(0,86400000-elapsed),h=Math.floor(rem/3600000),m=Math.floor((rem%3600000)/60000);
+  return '<div class="quote-item"><div class="quote-item-name">'+esc(q.name)+'</div><div class="quote-item-desc">'+esc(q.desc)+'</div><div class="quote-item-user">'+esc(q.createdBy)+'</div><div class="quote-progress"><div style="width:'+pct+'%"></div></div><div class="quote-item-user">'+h+'h '+m+'m restantes</div></div>';
+ }).join("");
+ renderQuotesModal();
+}
+function openQuotesModal(){
+ renderQuotesModal();
+ document.getElementById("quotesModal").classList.remove("hidden");
+}
+function closeQuotesModal(){
+ document.getElementById("quotesModal").classList.add("hidden");
+}
+function renderQuotesModal(){
+ const box=document.getElementById("quotesModalList");
+ if(!box)return;
+ const now=Date.now();
+ const active=quotes().filter(q=>now-q.createdAt<86400000);
+ if(!active.length){
+   box.innerHTML='<div class="quote-modal-empty">No hay cotizaciones pendientes.</div>';
+   return;
+ }
+ box.innerHTML=active.map(q=>{
+   const elapsed=now-q.createdAt;
+   const pct=Math.max(0,Math.min(100,elapsed/86400000));
+   const rem=Math.max(0,86400000-elapsed);
+   const h=Math.floor(rem/3600000),m=Math.floor((rem%3600000)/60000);
+   const barColor=pct<50?"#5dbb78":pct<80?"#d59a45":"#c95757";
+   return '<div class="quote-modal-item"><div class="quote-modal-top"><div class="quote-modal-name">'+esc(q.name)+'</div><div class="quote-modal-user">'+esc(q.createdBy)+'</div></div><div class="quote-modal-desc">'+esc(q.desc)+'</div><div class="quote-modal-progress"><div style="width:'+pct+'%;background:'+barColor+'"></div></div><div class="quote-modal-time">'+h+'h '+m+'m restantes</div></div>';
+ }).join("");
+}
+function updateQuotes(){renderQuotes();if(!document.getElementById("quotesModal").classList.contains("hidden"))renderQuotesModal()}
+function showNew(){showNewMode("order");}function openUserModal(){
+ renderUsers();
+ document.getElementById("userModal").classList.remove("hidden");
+}
+function closeUserModal(){
+ document.getElementById("userModal").classList.add("hidden");
+}
+function renderUsers(){
+ const list=document.getElementById("userList");
+ const u=users(), c=colors();
+ list.innerHTML="";
+ u.forEach((name,i)=>{
+  const row=document.createElement("div");row.className="user-row";
+  const b=document.createElement("button");b.type="button";b.className="user-name";
+  b.innerHTML='<span class="color-dot" style="background:'+c[i]+'"></span>'+esc(name);
+  b.onclick=()=>selectUser(i);
+  const e=document.createElement("button");e.type="button";e.className="edit-btn";e.textContent="✏️ Editar";
+  e.onclick=()=>editUser(i);
+  row.appendChild(b);row.appendChild(e);list.appendChild(row);
+ });
+}
+function selectUser(i){
+ const u=users(),c=colors();
+ localStorage.setItem(CURRENT_USER_KEY,u[i]);
+ localStorage.setItem(CURRENT_COLOR_KEY,c[i]);
+ closeUserModal();
+ showNewMode(formMode);
+}
+function colorPicker(selected,onPick){
+ const wrap=document.createElement("div");wrap.className="color-grid";
+ palette.forEach(col=>{
+  const b=document.createElement("button");b.type="button";b.className="color-choice"+(col===selected?" selected":"");b.style.background=col;
+  b.onclick=()=>{selected=col;wrap.querySelectorAll("button").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");onPick(col)};
+  wrap.appendChild(b);
+ });
+ return wrap;
+}
+function editUser(i){
+ const u=users(),c=colors(),modal=document.getElementById("userModal"),list=document.getElementById("userList");
+ list.innerHTML="";
+ const title=document.createElement("h3");title.textContent="Editar usuario";list.appendChild(title);
+ const input=document.createElement("input");input.value=u[i];list.appendChild(input);
+ let selected=c[i];
+ list.appendChild(colorPicker(selected,col=>selected=col));
+ const save=document.createElement("button");save.className="add-user";save.textContent="GUARDAR";
+ save.onclick=()=>{
+  const name=input.value.trim();if(!name){alert("El nombre no puede quedar vacío.");return}
+  u[i]=name;c[i]=selected;
+  localStorage.setItem(USERS_KEY,JSON.stringify(u));localStorage.setItem(COLORS_KEY,JSON.stringify(c));
+  if(localStorage.getItem(CURRENT_USER_KEY)===u[i])localStorage.setItem(CURRENT_COLOR_KEY,selected);
+  renderUsers();
+ };
+ list.appendChild(save);
+ const cancel=document.createElement("button");cancel.className="cancel-btn";cancel.textContent="Cancelar";cancel.onclick=renderUsers;list.appendChild(cancel);
+}
+function addUser(){
+ const list=document.getElementById("userList");list.innerHTML="";
+ const title=document.createElement("h3");title.textContent="Añadir usuario";list.appendChild(title);
+ const input=document.createElement("input");input.placeholder="Nombre del usuario";list.appendChild(input);
+ let selected=palette[users().length%palette.length];
+ list.appendChild(colorPicker(selected,col=>selected=col));
+ const save=document.createElement("button");save.className="add-user";save.textContent="AÑADIR";
+ save.onclick=()=>{
+  const name=input.value.trim();if(!name){alert("Escribe un nombre.");return}
+  const u=users(),c=colors();u.push(name);c.push(selected);
+  localStorage.setItem(USERS_KEY,JSON.stringify(u));localStorage.setItem(COLORS_KEY,JSON.stringify(c));renderUsers();
+ };
+ list.appendChild(save);
+ const cancel=document.createElement("button");cancel.className="cancel-btn";cancel.textContent="Cancelar";cancel.onclick=renderUsers;list.appendChild(cancel);
+}
+function updateBalance(){
+ const total=Number(document.getElementById("total").value)||0,dep=Number(document.getElementById("deposit").value)||0;
+ document.getElementById("balance").textContent=money(Math.max(0,total-dep));
+}
+function waNumber(v){
+ let n=String(v||"").replace(/\D/g,"");if(n.startsWith("00"))n=n.slice(2);if(n.length===10&&n.startsWith("3"))n="57"+n;return n;
+}
+
+function setPaymentMethod(method){
+ const hidden=document.getElementById("depositMethod");
+ if(hidden)hidden.value=method;
+ document.querySelectorAll(".payment-btn").forEach(btn=>{
+  btn.classList.toggle("selected",btn.dataset.method===method);
+ });
+}
+function paymentMethodLabel(method){
+ return method==="nequi"?"Nequi":method==="bancolombia"?"Bancolombia":"Efectivo";
+}
+function todayMethodTotals(){
+ const key=dateKey();
+ const totals={efectivo:0,nequi:0,bancolombia:0,legacy:0};
+ clients().forEach(x=>{
+  const depositMethod=x.depositMethod||"efectivo";
+  if(x.createdAt && dateKey(new Date(x.createdAt))===key){
+   totals[depositMethod]=(totals[depositMethod]||0)+(Number(x.deposit)||0);
+  }
+  if(x.deliveredAt && dateKey(new Date(x.deliveredAt))===key){
+   const remaining=Math.max(0,(Number(x.total)||0)-(Number(x.deposit)||0));
+   const method=x.deliveryPaymentMethod||depositMethod;
+   totals[method]=(totals[method]||0)+remaining;
+  }
+ });
+ return totals;
+}
+
+
+let editingJobId=null;
+
+function editJob(id){
+ const x=clients().find(a=>a.id===id);
+ if(!x)return;
+ editingJobId=id;
+ document.getElementById("name").value=x.name||"";
+ document.getElementById("wa").value=x.wa||"";
+ document.getElementById("desc").value=x.desc||"";
+ document.getElementById("delivery").value=x.delivery||"";
+ document.getElementById("total").value=x.total||0;
+ document.getElementById("deposit").value=x.deposit||0;
+ document.getElementById("depositMethod").value=x.depositMethod||"efectivo";
+ document.getElementById("saveClientBtn").textContent="GUARDAR CAMBIOS";
+ document.getElementById("cancelEditBtn").classList.remove("hidden");
+ setPaymentMethod(x.depositMethod||"efectivo");
+ showNew();
+}
+function cancelEdit(){
+ editingJobId=null;
+ ["name","wa","desc","delivery","total","deposit"].forEach(id=>document.getElementById(id).value="");
+ document.getElementById("depositMethod").value="efectivo";
+ document.getElementById("saveClientBtn").textContent="CREAR CLIENTE Y ORDEN";
+ document.getElementById("cancelEditBtn").classList.add("hidden");
+ setPaymentMethod("efectivo");
+ updateBalance();
+ showHome();
+}
+
+function saveClient(){
+ if(formMode==="quote"){saveQuote();return}
+
+ const name=document.getElementById("name").value.trim(),wa=document.getElementById("wa").value.trim(),desc=document.getElementById("desc").value.trim();
+ const delivery=document.getElementById("delivery").value,total=Number(document.getElementById("total").value)||0,dep=Number(document.getElementById("deposit").value)||0;
+ const depositMethod=document.getElementById("depositMethod").value||"efectivo";
+ if(!name){alert("Escribe el nombre del cliente o empresa.");return}
+ if(!desc){alert("Escribe la descripción del trabajo.");return}
+ if(!delivery){alert("Selecciona una fecha de entrega.");return}
+ if(dep>total){alert("El abono no puede ser mayor que el valor total.");return}
+ const arr=clients();
+ if(editingJobId!==null){
+  const x=arr.find(a=>a.id===editingJobId);
+  if(!x){alert("No se encontró el trabajo.");return}
+  x.name=name;x.wa=wa;x.desc=desc;x.delivery=delivery;x.total=total;x.deposit=dep;x.balance=total-dep;x.depositMethod=depositMethod;
+ }else{
+  arr.unshift({id:Date.now(),name,wa,desc,delivery,total,deposit:dep,balance:total-dep,depositMethod,createdAt:Date.now(),createdBy:localStorage.getItem(CURRENT_USER_KEY)||"Sin usuario",createdByColor:localStorage.getItem(CURRENT_COLOR_KEY)||"#111111",delivered:false});
+ }
+ localStorage.setItem(CLIENTS_KEY,JSON.stringify(arr));
+ ["name","wa","desc","delivery","total","deposit"].forEach(id=>document.getElementById(id).value="");
+ document.getElementById("depositMethod").value="efectivo";
+ setPaymentMethod("efectivo");
+ editingJobId=null;
+ document.getElementById("saveClientBtn").textContent="CREAR CLIENTE Y ORDEN";
+ document.getElementById("cancelEditBtn").classList.add("hidden");
+ updateBalance();showHome();
+}
+function openFinance(){
+ document.getElementById("financePassword").value="";
+ document.getElementById("financeModal").classList.remove("hidden");
+ document.getElementById("financePassword").focus();
+}
+function closeFinance(){document.getElementById("financeModal").classList.add("hidden")}
+function enterFinance(){
+ if(document.getElementById("financePassword").value!==FINANCE_PASSWORD){alert("Contraseña incorrecta.");return}
+ closeFinance();
+ document.getElementById("home").classList.add("hidden");
+ document.getElementById("new").classList.add("hidden");
+ document.getElementById("finance").classList.remove("hidden");
+ renderFinance();
+}
+function formatDate(s){return new Date(s+"T12:00:00").toLocaleDateString("es-CO",{day:"2-digit",month:"2-digit",year:"numeric"})}
+let pendingDelivery=null;
+
+let pendingDeleteJob=null;
+function askDeleteJob(id){
+ pendingDeleteJob=id;
+ const x=clients().find(a=>a.id===id);
+ document.getElementById("deleteJobText").textContent=
+   x ? '¿Seguro que quieres eliminar "'+x.name+'"? Esta acción no se puede deshacer.' : "¿Seguro que quieres eliminar este trabajo?";
+ document.getElementById("deleteJobModal").classList.remove("hidden");
+}
+function closeDeleteJob(){
+ pendingDeleteJob=null;
+ document.getElementById("deleteJobModal").classList.add("hidden");
+}
+function confirmDeleteJob(){
+ if(pendingDeleteJob===null)return;
+ const arr=clients().filter(x=>x.id!==pendingDeleteJob);
+ localStorage.setItem(CLIENTS_KEY,JSON.stringify(arr));
+ closeDeleteJob();
+ searchResults=null;
+ setSearchActive(false);
+ render();
+ renderHistory();
+}
+
+function closeDeliveryPayment(){document.getElementById("deliveryPaymentModal").classList.add("hidden");}
+function finishDeliveryWithMethod(method){
+ if(pendingDeliveryId===null)return;
+ const id=pendingDeliveryId;
+ const arr=clients();
+ const x=arr.find(a=>a.id===id);
+ if(!x){closeDeliveryPayment();pendingDeliveryId=null;return}
+ const remaining=Math.max(0,(Number(x.total)||0)-(Number(x.deposit)||0));
+ x.delivered=true;
+ x.deliveredAt=Date.now();
+ x.deliveryPaymentMethod=method;
+ x.deliveryPayment=remaining;
+ x.balance=0;
+ localStorage.setItem(CLIENTS_KEY,JSON.stringify(arr));
+ closeDeliveryPayment();
+ pendingDeliveryId=null;
+ searchResults=null;
+ setSearchActive(false);
+ render();
+ renderHistory();
+}
+function openLegacyPaymentFor(target){
+ document.getElementById("legacyPaymentPassword").value="";
+ document.getElementById("legacyPaymentModal").dataset.target=target;
+ document.getElementById("legacyPaymentModal").classList.remove("hidden");
+ setTimeout(()=>document.getElementById("legacyPaymentPassword").focus(),50);
+}
+function closeLegacyPayment(){
+ document.getElementById("legacyPaymentModal").classList.add("hidden");
+ document.getElementById("legacyPaymentPassword").value="";
+}
+function confirmLegacyPayment(){
+ if(document.getElementById("legacyPaymentPassword").value!=="1352"){alert("Contraseña incorrecta.");return}
+ const target=document.getElementById("legacyPaymentModal").dataset.target;
+ closeLegacyPayment();
+ if(target==="deposit")setPaymentMethod("legacy");
+ if(target==="delivery")finishDeliveryWithMethod("legacy");
+}
+
+function askDelivery(id){pendingDeliveryId=id;document.getElementById("deliveryModal").classList.remove("hidden")}
+function closeDelivery(){pendingDeliveryId=null;document.getElementById("deliveryModal").classList.add("hidden")}
+function confirmDelivery(){
+ if(pendingDeliveryId===null)return;
+ const x=clients().find(a=>a.id===pendingDeliveryId);
+ if(!x){closeDelivery();return}
+ document.getElementById("deliveryModal").classList.add("hidden");
+ document.getElementById("deliveryPaymentModal").classList.remove("hidden");
+}
+function cancelDeliveryPayment(){
+ document.getElementById("deliveryPaymentModal").classList.add("hidden");
+ pendingDeliveryId=null;
+}
+
+function countdownDayEnd(base){
+ const d=new Date(base||Date.now());
+ d.setHours(18,0,0,0);
+ return d;
+}
+function updateCountdowns(){
+ const now=Date.now();
+ clients().forEach(x=>{
+  if(x.delivered)return;
+  const bar=document.getElementById("bar-"+x.id),time=document.getElementById("time-"+x.id);
+  if(!bar||!time)return;
+  const deliveryDay=new Date(x.delivery+"T00:00:00");
+  const end=new Date(deliveryDay);
+  end.setHours(18,0,0,0);
+  const endMs=end.getTime();
+  const startTime=Number(x.createdAt)||now;
+  const total=Math.max(1,endMs-startTime);
+  const pct=Math.min(100,Math.max(0,((now-startTime)/total)*100));
+  bar.style.width=pct+"%";
+  bar.style.background=pct<50?"#2e9d55":pct<=80?"#e59a22":"#d94b4b";
+  const r=endMs-now;
+  if(r<=0)time.textContent="⚠️ Fecha de entrega vencida";
+  else time.textContent="Tiempo restante: "+Math.floor(r/86400000)+"d "+Math.floor(r%86400000/3600000)+"h "+Math.floor(r%3600000/60000)+"m · "+Math.round(pct)+"%";
+ });
+}
+
+
+let historyFilter=null;
+
+
+function panelSearchUsers(){
+ const map=new Map();
+ clients().filter(x=>!x.delivered).forEach(x=>{
+  const name=x.createdBy||"Sin usuario";
+  map.set(name,x.createdByColor||"#111111");
+ });
+ return Array.from(map.entries()).map(([name,color])=>({name,color}));
+}
+function openPanelUserSearch(){
+ const modal=document.getElementById("searchInputModal");
+ if(!modal)return;
+ const input=document.getElementById("searchInput");
+ const choices=document.getElementById("searchUserChoices");
+ const title=document.getElementById("searchInputTitle");
+ const label=document.getElementById("searchInputLabel");
+ if(!choices){alert("No se pudo abrir la búsqueda por usuario.");return}
+ title.textContent="Buscar por usuario";
+ label.textContent="Selecciona un usuario";
+ input.classList.add("hidden");
+ choices.classList.remove("hidden");
+ choices.innerHTML="";
+ panelSearchUsers().forEach(u=>{
+  const b=document.createElement("button");
+  b.type="button";
+  b.className="add-user";
+  b.style.marginBottom="8px";
+  b.innerHTML='<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:'+esc(u.color)+';margin-right:8px"></span>'+esc(u.name);
+  b.onclick=()=>runPanelUserSearch(u.name);
+  choices.appendChild(b);
+ });
+ modal.dataset.mode="user";
+ modal.classList.remove("hidden");
+}
+function runPanelUserSearch(user){
+ const q=normalizeText(user);
+ searchResults=clients().filter(x=>!x.delivered&&normalizeText(x.createdBy)===q);
+ setSearchActive(true);
+ closeSearchInput();
+ render(searchResults);
+}
+function normalizeText(value){
+ return String(value||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
+}
+function historyUsers(){
+ const map=new Map();
+ clients().filter(x=>x.delivered).forEach(x=>{
+  const name=x.createdBy||"Sin usuario";
+  map.set(name,x.createdByColor||"#111111");
+ });
+ return Array.from(map.entries()).map(([name,color])=>({name,color}));
+}
+function openHistorySearch(){
+ document.getElementById("historySearchModal").classList.remove("hidden");
+}
+function closeHistorySearch(){
+ document.getElementById("historySearchModal").classList.add("hidden");
+}
+function openHistoryInput(mode){
+ closeHistorySearch();
+ const modal=document.getElementById("historySearchInputModal");
+ const input=document.getElementById("historySearchInput");
+ const choices=document.getElementById("historyUserChoices");
+ const title=document.getElementById("historySearchInputTitle");
+ const label=document.getElementById("historySearchInputLabel");
+ choices.classList.add("hidden");
+ choices.innerHTML="";
+ input.classList.remove("hidden");
+ input.value="";
+ if(mode==="name"){
+  title.textContent="Buscar por nombre";
+  label.textContent="Nombre del cliente o empresa";
+  input.type="text";
+  input.placeholder="Ej. José Café";
+ }else if(mode==="date"){
+  title.textContent="Buscar por fecha";
+  label.textContent="Fecha de entrega";
+  input.type="date";
+  input.placeholder="";
+ }else{
+  title.textContent="Buscar por usuario";
+  label.textContent="Selecciona un usuario";
+  input.classList.add("hidden");
+  choices.classList.remove("hidden");
+  historyUsers().forEach(u=>{
+   const b=document.createElement("button");
+   b.type="button";
+   b.className="add-user";
+   b.style.marginBottom="8px";
+   b.innerHTML='<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:'+esc(u.color)+';margin-right:8px"></span>'+esc(u.name);
+   b.onclick=()=>runHistorySearch("user",u.name);
+   choices.appendChild(b);
+  });
+ }
+ modal.dataset.mode=mode;
+ modal.classList.remove("hidden");
+ if(mode!=="user")setTimeout(()=>input.focus(),50);
+}
+function closeHistoryInput(){
+ document.getElementById("historySearchInputModal").classList.add("hidden");
+}
+function runHistorySearch(mode, value=null){
+ const input=document.getElementById("historySearchInput");
+ const q=value!==null?value:input.value.trim();
+ if(!q){alert("Selecciona o escribe algo para buscar.");return}
+ historyFilter={mode,value:q};
+ closeHistoryInput();
+ const result=clients().filter(x=>{
+  if(!x.delivered)return false;
+  if(mode==="name")return normalizeText(x.name).includes(normalizeText(q));
+  if(mode==="date")return x.delivery===q || (x.deliveredAt&&dateKey(new Date(x.deliveredAt))===q);
+  return normalizeText(x.createdBy)===normalizeText(q);
+ });
+ renderHistory(result);
+ document.getElementById("historyClearBtn").classList.remove("hidden");
+ document.getElementById("historySearchStatus").textContent=
+   mode==="name"?"Nombre: "+q:mode==="date"?"Fecha: "+q:"Usuario: "+q;
+}
+function clearHistorySearch(){
+ historyFilter=null;
+ document.getElementById("historyClearBtn").classList.add("hidden");
+ document.getElementById("historySearchStatus").textContent="Todos los trabajos";
+ renderHistory();
+}
+function renderHistory(list=null){
+ const arr=Array.isArray(list)?list:clients().filter(x=>x.delivered);
+ const box=document.getElementById("historyClients");
+ if(!box)return;
+ if(!arr.length){
+  box.innerHTML='<div class="card"><b>No encontramos trabajos.</b><div class="small" style="margin-top:6px">Prueba otro nombre, fecha o usuario.</div></div>';
+  return;
+ }
+ box.innerHTML=arr.map(x=>`
+  <div class="client"><div class="client-name">${esc(x.name)}</div>
+   <div class="small">WhatsApp: ${esc(x.wa||"—")}</div>
+   ${x.wa?'<a class="card-wa-btn" href="https://wa.me/'+waNumber(x.wa)+'" target="_blank" rel="noopener" style="display:inline-block;margin-top:8px">💬 WhatsApp</a>':''}
+   <p>${esc(x.desc)}</p>
+   <div><b>Valor total:</b> ${money(x.total)} · <b>Abono:</b> ${money(x.deposit)} · <b>Resta:</b> $0</div>
+   <div style="margin-top:10px"><span class="delivered-badge">✓ ENTREGADO</span></div>
+  </div>`).join("");
+}
+
+function render(list=null){
+ const source=list===null?(searchResults===null?clients():searchResults):list;
+ const arr=(Array.isArray(source)?source:[]).filter(x=>!x.delivered);
+ document.getElementById("count").textContent=arr.length+" registrados"+(searchResults!==null?" · búsqueda activa":"");
+ document.getElementById("clients").innerHTML=arr.map(x=>{
+  const action='<div class="client-top-right">'+
+    '<div class="creator-tag creator-badge" style="background:'+esc(x.createdByColor||"#111111")+'">'+esc(x.createdBy||"Sin usuario")+'</div>'+
+    '<div class="client-actions">'+
+      '<a class="card-wa-btn" href="https://wa.me/'+waNumber(x.wa||"")+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" aria-label="WhatsApp">💬</a>'+
+      '<button type="button" class="edit-job-btn" onclick="editJob('+x.id+')" aria-label="Editar trabajo">✎</button>'+
+      '<button type="button" class="delivered-btn" onclick="askDelivery('+x.id+')" aria-label="Entregado">✓</button>'+
+      '<button type="button" class="delete-job-btn" onclick="askDeleteJob('+x.id+')" aria-label="Eliminar trabajo">⌫</button>'+
+    '</div>'+
+  '</div>';
+  return `<div class="client">
+    ${action}
+    <div class="client-name">${esc(x.name)}</div>
+    <div class="small">WhatsApp: ${esc(x.wa||"—")}</div>
+    <p>${esc(x.desc)}</p>
+    <div><b>Valor total:</b> ${money(x.total)} · <b>Abono:</b> ${money(x.deposit)} · <b>Resta:</b> ${money(x.delivered?0:x.balance)}</div>
+    <div style="margin-top:12px"><b>Entrega:</b> ${formatDate(x.delivery)}</div>
+    <div class="progress-bg"><div class="progress" id="bar-${x.id}"></div></div>
+    <div class="small" id="time-${x.id}" style="margin-top:5px"></div>
+</div>`;
+ }).join("");
+ updateCountdowns();
+}
+
+
+let searchMode="name";
+let searchResults=null;
+
+function setSearchActive(active){
+ const x=document.getElementById("clearSearchBtnTop");
+ if(x)x.classList.toggle("hidden",!active);
+}
+
+function openSearchChoice(){
+ const modal=document.getElementById("searchModal");
+ if(modal)modal.classList.remove("hidden");
+}
+
+function closeSearchChoice(){
+ const modal=document.getElementById("searchModal");
+ if(modal)modal.classList.add("hidden");
+}
+
+function openSearchInput(mode){
+ searchMode=mode;
+ closeSearchChoice();
+ const title=document.getElementById("searchInputTitle");
+ const label=document.getElementById("searchInputLabel");
+ const input=document.getElementById("searchInput");
+ if(mode==="name"){
+  title.textContent="Buscar por nombre";
+  label.textContent="Nombre del cliente o empresa";
+  input.type="text";
+  input.placeholder="Ej. Juan o Empresa XYZ";
+ }else{
+  title.textContent="Buscar por fecha";
+  label.textContent="Fecha de entrega";
+  input.type="date";
+  input.placeholder="";
+ }
+ input.value="";
+ document.getElementById("searchInputModal").classList.remove("hidden");
+ setTimeout(()=>input.focus(),50);
+}
+
+function closeSearchInput(){
+ document.getElementById("searchInputModal").classList.add("hidden");
+}
+
+function runSearch(){
+ const input=document.getElementById("searchInput");
+ const q=input.value.trim().toLowerCase();
+ if(!q){alert("Escribe o selecciona algo para buscar.");return}
+ const arr=clients();
+ if(searchMode==="name"){
+  searchResults=arr.filter(x=>(x.name||"").toLowerCase().includes(q));
+ }else{
+  searchResults=arr.filter(x=>x.delivery===input.value);
+ }
+ closeSearchInput();
+ setSearchActive(true);
+ render(searchResults);
+}
+
+function clearSearch(){
+ searchResults=null;
+ setSearchActive(false);
+ closeSearchInput();
+ render();
+}
+
+function bootImagen3D(){
+ const on=(id,event,fn)=>{
+  const el=document.getElementById(id);
+  if(!el) return;
+  el.addEventListener(event,fn);
+ };
+
+ on("searchBtn","click",openSearchChoice);
+ on("clearSearchBtnTop","click",clearSearch);
+ on("searchUserBtn","click",openPanelUserSearch);
+ on("searchNameBtn","click",()=>openSearchInput("name"));
+ on("searchDateBtn","click",()=>openSearchInput("date"));
+ on("searchCancelBtn","click",closeSearchChoice);
+ on("runSearchBtn","click",runSearch);
+ on("clearSearchBtn","click",clearSearch);
+
+ on("newQuoteBtn","click",openQuoteFlow);
+ on("quotePendingBtn","click",openQuotesModal);
+ document.getElementById("quotesModal").addEventListener("wheel",e=>{if(!e.target.closest(".quotes-modal"))e.preventDefault();},{passive:false});
+ document.getElementById("quotesModal").addEventListener("touchmove",e=>{if(!e.target.closest(".quotes-modal"))e.preventDefault();},{passive:false});
+ on("closeQuotesModalBtn","click",closeQuotesModal);
+ on("newClientBtn","click",openUserModal);
+ on("cancelUserBtn","click",closeUserModal);
+ on("addUserBtn","click",addUser);
+ on("backHomeBtn","click",showHome);
+
+ on("waBtn","click",()=>{
+  const n=waNumber(document.getElementById("wa").value);
+  if(n.length<10) alert("Escribe un número válido.");
+  else window.open("https://wa.me/"+n,"_blank");
+ });
+ on("wa","input",()=>{document.getElementById("waBtn").disabled=!document.getElementById("wa").value.trim()});
+ on("total","input",updateBalance);
+ on("deposit","input",updateBalance);
+ document.querySelectorAll(".payment-btn[data-method]").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+   if(btn.dataset.method==="legacy")openLegacyPaymentFor("deposit");
+   else setPaymentMethod(btn.dataset.method);
+  });
+ });
+ on("deliveryCashBtn","click",()=>finishDeliveryWithMethod("efectivo"));
+ on("deliveryNequiBtn","click",()=>finishDeliveryWithMethod("nequi"));
+ on("deliveryBancolombiaBtn","click",()=>finishDeliveryWithMethod("bancolombia"));
+ on("deliveryLegacyBtn","click",()=>openLegacyPaymentFor("delivery"));
+ on("saveClientBtn","click",saveClient);
+ on("cancelEditBtn","click",cancelEdit);
+
+ on("inventoryBtn","click",openInventory);
+ on("inventoryBackBtn","click",closeInventory);
+ on("addInventoryBtn","click",openInventoryModal);
+ on("cancelInventoryBtn","click",closeInventoryModal);
+ on("saveInventoryBtn","click",saveInventoryItem);
+ on("inventorySearch","input",renderInventory);
+ document.querySelectorAll(".inventory-type").forEach(b=>b.addEventListener("click",()=>chooseInventoryType(b.dataset.type)));
+ on("financeBtn","click",openFinance);
+ on("financeEnterBtn","click",enterFinance);
+ on("financeCancelBtn","click",closeFinance);
+ on("financePassword","keydown",e=>{if(e.key==="Enter")enterFinance()});
+ on("financeBackBtn","click",showHome);
+ on("historyBtn","click",()=>{
+  document.getElementById("home").classList.add("hidden");
+  document.getElementById("new").classList.add("hidden");
+  document.getElementById("finance").classList.add("hidden");
+  document.getElementById("history").classList.remove("hidden");
+  renderHistory();
+ });
+ on("historyBackBtn","click",showHome);
+ on("historySearchBtn","click",()=>{openHistorySearch();});
+ on("historyClearBtn","click",clearHistorySearch);
+ on("historyNameBtn","click",()=>openHistoryInput("name"));
+ on("historyDateBtn","click",()=>openHistoryInput("date"));
+ on("historyUserBtn","click",()=>openHistoryInput("user"));
+ on("historySearchCancelBtn","click",closeHistorySearch);
+ on("historySearchInputCancelBtn","click",closeHistoryInput);
+ on("legacyPaymentConfirmBtn","click",confirmLegacyPayment);
+ on("legacyPaymentCancelBtn","click",closeLegacyPayment);
+ on("legacyPaymentPassword","keydown",e=>{if(e.key==="Enter")confirmLegacyPayment();});
+ on("confirmDeleteJobBtn","click",confirmDeleteJob);
+ on("cancelDeleteJobBtn","click",closeDeleteJob);
+ on("historyRunSearchBtn","click",()=>runHistorySearch(document.getElementById("historySearchInputModal").dataset.mode));
+
+
+ on("closeCashBtn","click",openCashClose);
+ on("confirmCashBtn","click",confirmCashClose);
+ on("cancelCashBtn","click",closeCashModal);
+ on("addExpenseBtn","click",()=>openMoneyModal("expense"));
+ on("addInvestmentBtn","click",()=>openMoneyModal("investment"));
+ on("saveMoneyBtn","click",saveMoney);
+ on("cancelMoneyBtn","click",closeMoneyModal);
+ on("viewDiscountsBtn","click",openDiscounts);
+ on("clearDiscountsBtn","click",clearDiscountResults);
+ on("cancelDiscountsBtn","click",closeDiscounts);
+ on("searchDiscountsBtn","click",()=>{
+  const from=document.getElementById("discountFrom").value;
+  const to=document.getElementById("discountTo").value;
+  if(!from||!to){alert("Selecciona ambas fechas.");return}
+  if(from>to){alert("La fecha inicial no puede ser posterior a la fecha final.");return}
+  closeDiscounts();
+  renderDiscountResults(from,to);
+ });
+ on("prevMonthBtn","click",()=>{
+  financeMonth--;
+  if(financeMonth<0){financeMonth=11;financeYear--}
+  renderFinance();
+ });
+ on("nextMonthBtn","click",()=>{
+  financeMonth++;
+  if(financeMonth>11){financeMonth=0;financeYear++}
+  renderFinance();
+ });
+
+ on("confirmDeliveryBtn","click",confirmDelivery);
+ on("cancelDeliveryBtn","click",closeDelivery);
+ on("cancelDeliveryPaymentBtn","click",cancelDeliveryPayment);
+
+ setSearchActive(false);
+ setPaymentMethod(document.getElementById("depositMethod")?.value||"efectivo");
+ render();
+ setInterval(updateCountdowns,1000);
+}
+
+if(document.readyState==="loading"){
+ document.addEventListener("DOMContentLoaded",bootImagen3D);
+}else{
+ bootImagen3D();
+}
+setInterval(updateQuotes,60000);
+if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",()=>{renderQuotes();});}else{renderQuotes();}
+</script>
+</body>
+</html>
